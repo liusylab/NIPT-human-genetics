@@ -7,24 +7,24 @@ BaseVar (v0.8.0): <https://github.com/ShujiaHuang/basevar/releases/tag/v0.8.0>
 ### Gibbs sampling and hidden markov model for genotype imputation
 #### genotype imputation using GLIMPSE (version 1.1.1)
 - [step1_reference_panle_prepare.sh](./glimpse_imputation/step1_reference_panle_prepare.sh)
-- step2_Computing_GLs.sh
-- step2_3_merge_GLs_chunk.sh
-- step3_phase.sh
-- step4_ligate.sh
-- step5_accuracy.sh
+- [step2_Computing_GLs.sh](./glimpse_imputation/step2_Computing_GLs.sh)
+- [step2_3_merge_GLs_chunk.sh](./glimpse_imputation/step2_3_merge_GLs_chunk.sh)
+- [step3_phase.sh](./glimpse_imputation/step3_phase.sh)
+- [step4_ligate.sh](./glimpse_imputation/step4_ligate.sh)
+- [step5_accuracy.sh](./glimpse_imputation/step5_accuracy.sh)
 
 #### genotype imputation using QUILT (version 1.0.4)
-- quilt_1KGP.sh
+- [quilt_1KGP.sh](./quilt_imputation/quilt_1KGP.sh)
 
 ### kinship estimation using PLINK (v2.00a3LM)
-- step1_extract_deep_vcf_sample.sh
-- step2_plink_2_kinship.sh
-- step3_MERGE.R
+- [step1_extract_deep_vcf_sample.sh](./kinship/step1_extract_deep_vcf_sample.sh)
+- [step2_plink_2_kinship.sh](./kinship/step2_plink_2_kinship.sh)
+- [step3_MERGE.R](./kinship/step3_MERGE.R)
 
 ### Principal component analyses using PLINK (v2.00a3LM) or EMU (v.0.9)
-- emu10.sh
-- plink10.sh
+- [emu10.sh](./pca/emu10.sh)
+- [plink10.sh](./pca/plink10.sh)
 
 ### Genome-wide association studies using PLINK (v2.00a3LM)
-- gwas.plink.sh
+- [gwas.plink.sh](./gwas/gwas.plink.sh)
 
