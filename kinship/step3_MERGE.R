@@ -1,0 +1,12 @@
+#! /usr/local/bin Rscriptlibrary(dplyr)
+library(dplyr)
+library(data.table)
+library(R.utils)
+library(tidyr)
+workdir<-/kinship
+input_file<-fread('$workdir/plink2_kinship/70608_GLs.merged.chr1-22.0.001_maf.kin0',header=T,sep="\t",stringsAsFactors = F)
+Sample_list<-fread('kinship_files/kinship_match.txt',header=T,sep="\t",stringsAsFactors = F)
+colnames(input_file)<-c("nipt_id.y","nipt_id.x","NSNP","HETHET","IBS0","KINSHIP")
+colnames(Sample_list)<-c("nipt_id.x","nipt_id.y","seq_dep.x","seq_dep.y","coef")
+merge_file<-merge(input_file,Sample_list,by=c("nipt_id.x","nipt_id.y"))
+write.table(merge_file,'$workdir/plink2_kinship_merge/merge.70608_GLs.merged.chr1-22.0.001_maf.kin0',quote=FALSE,row.names=FALSE,col.names=T,sep = "\t")
