@@ -6,7 +6,7 @@ BaseVar (v0.8.0): <https://github.com/ShujiaHuang/basevar/releases/tag/v0.8.0>
 
 ### Gibbs sampling and hidden markov model for genotype imputation
 #### genotype imputation using GLIMPSE (version 1.1.1)
-- step1_reference_panle_prepare.sh
+- [step1_reference_panle_prepare.sh](./glimpse_imputation/step1_reference_panle_prepare.sh)
 - step2_Computing_GLs.sh
 - step2_3_merge_GLs_chunk.sh
 - step3_phase.sh
