@@ -3,8 +3,7 @@
 
 ### Maximum likelihood model for SNP discovery and allele frequency estimation
 BaseVar (v0.8.0): <https://github.com/ShujiaHuang/basevar/releases/tag/v0.8.0>
-
-simulation: 
+#### simulation: 
 - [step1.basevar.simulation.sh](./basevar_simulation/step1.basevar.simulation.sh)
 ### Gibbs sampling and hidden markov model for genotype imputation
 #### genotype imputation using GLIMPSE (version 1.1.1)
