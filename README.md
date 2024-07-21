@@ -1,6 +1,15 @@
 # NIPT-human-genetics
 ## A tutorial to utilize NIPT sequencing data resource for human genetic investigation
 
+### Features
+NIPT-human-genetics is a set of tools for analysing large-scale NIPT sequencing data for human genetic investigation
+
+### Pre-requistes
+- Installations of BaseVar, GLIMPSE, QUILT, and PLINK
+
+### Environment
+- The examples were run with SLURM workload manager in a Unix system. Commands can be adapted to other Unix/Linux systems. 
+
 ### Maximum likelihood model for SNP discovery and allele frequency estimation
 BaseVar (v0.8.0): <https://github.com/ShujiaHuang/basevar/releases/tag/v0.8.0>
 #### simulation: 
