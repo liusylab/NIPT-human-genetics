@@ -14,30 +14,33 @@ NIPT-human-genetics is a set of tools for analysing large-scale NIPT sequencing 
 - Liu et al., [genomic analyses from non-invasive prenatal testing reveal genetic associations, patterns of viral infections, and chinese population history](https://doi.org/10.1016/j.cell.2018.08.016).Cell 175.2 (2018): 347-359
 
 ### Pre-requistes
-- Install BaseVar, GLIMPSE, QUILT, PLINK and EMU
-- [BaseVar]<https://github.com/ShujiaHuang/basevar/tree/master>
-- [GLIMPSE]<https://odelaneau.github.io/GLIMPSE/docs/installation>
-- [QUILT]<https://github.com/rwdavies/QUILT/blob/master/README_QUILT1.md> (optional)
-- [PLINK]<https://www.cog-genomics.org/plink/2.0/>
-- [EMU]<https://github.com/Rosemeis/emu> (optional)
+- Install BWA, Samtools, GATK, BaseVar, GLIMPSE, QUILT, PLINK and EMU
+- [BWA](https://github.com/lh3/bwa):<https://github.com/lh3/bwa>
+- [GATK]():<>
+- [Samtools]():<>
+- [BaseVar](https://github.com/ShujiaHuang/basevar/tree/master): <https://github.com/ShujiaHuang/basevar/tree/master>
+- [GLIMPSE](https://odelaneau.github.io/GLIMPSE/docs/installation): <https://odelaneau.github.io/GLIMPSE/docs/installation>
+- [QUILT](https://github.com/rwdavies/QUILT/blob/master/README_QUILT1.md): <https://github.com/rwdavies/QUILT/blob/master/README_QUILT1.md> (optional)
+- [PLINK](https://www.cog-genomics.org/plink/2.0/): <https://www.cog-genomics.org/plink/2.0/>
+- [EMU](https://github.com/Rosemeis/emu): <https://github.com/Rosemeis/emu> (optional)
 
-#### System requirements
-In order to use the set of tools in NIPT-human-genetics, we require a modern Linux operating system and a version of GCC > 4.4. 
+### System requirements
+In order to use the set of tools in NIPT-human-genetics, we require a modern Linux operating system, a version of GCC and JAVA.
 The enclosed shell examples were run with SLURM workload manager in a Red Hat 8.4.1-1 system. Commands can be adapted to other workload manager and Linux systems.
 
 ### Installation
-wget https://github.com/liusylab/NIPT-human-genetics/archive/refs/heads/main.zip
-unzip main.zip
-cd NIPT-human-genetics-main
+- wget https://github.com/liusylab/NIPT-human-genetics/archive/refs/heads/main.zip
+- unzip main.zip
+- cd NIPT-human-genetics-main
 
 ### Step-by-step tutorial
-#### simulation (optional)
+### Simulation experiments assessing the performance of BaseVar (optional)
 - cd basevar_simulation
 - [step1.basevar.simulation.sh](./basevar_simulation/step1.basevar.simulation.sh)
 - sh step1.basevar.simulation.sh
 
 ### Maximum likelihood model for SNP discovery and allele frequency estimation with BaseVar
-- [step1.]
+- [step1.basevar.sh]()
 
 ### Gibbs sampling and hidden markov model for genotype imputation
 #### genotype imputation using GLIMPSE (version 1.1.1)
