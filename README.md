@@ -7,19 +7,19 @@
 
 
 ### Introduction
-- NIPT-human-genetics is a set of tools for analysing large-scale NIPT sequencing data for human genetic investigation such as SNP detection and allele frequency estimation, individual genotype imputation, kinship estimation, population structure inference and genome-wide association studies.
+NIPT-human-genetics is a set of tools for analysing large-scale NIPT sequencing data for human genetic investigation such as SNP detection and allele frequency estimation, individual genotype imputation, kinship estimation, population structure inference and genome-wide association studies.
 
 ### Citation
-Liu et al., [Utilizing Non-Invasive Prenatal Test Sequencing Data Resource for Human Genetic Investigation](https://www.biorxiv.org/content/10.1101/2023.12.11.570976v1).BioRxiv (2023)
-Liu et al., [genomic analyses from non-invasive prenatal testing reveal genetic associations, patterns of viral infections, and chinese population history](https://doi.org/10.1016/j.cell.2018.08.016).Cell 175.2 (2018): 347-359
+- Liu et al., [Utilizing Non-Invasive Prenatal Test Sequencing Data Resource for Human Genetic Investigation](https://www.biorxiv.org/content/10.1101/2023.12.11.570976v1).BioRxiv (2023)
+- Liu et al., [genomic analyses from non-invasive prenatal testing reveal genetic associations, patterns of viral infections, and chinese population history](https://doi.org/10.1016/j.cell.2018.08.016).Cell 175.2 (2018): 347-359
 
 ### Pre-requistes
 - Install BaseVar, GLIMPSE, QUILT, PLINK and EMU
-- [BaseVar]: <https://github.com/ShujiaHuang/basevar/tree/master>
-- [GLIMPSE]: <https://odelaneau.github.io/GLIMPSE/docs/installation>
-- [QUILT]: <https://github.com/rwdavies/QUILT/blob/master/README_QUILT1.md> (optional)
-- [PLINK]: <https://www.cog-genomics.org/plink/2.0/>
-- [EMU]: <https://github.com/Rosemeis/emu> (optional)
+- [BaseVar]<https://github.com/ShujiaHuang/basevar/tree/master>
+- [GLIMPSE]<https://odelaneau.github.io/GLIMPSE/docs/installation>
+- [QUILT]<https://github.com/rwdavies/QUILT/blob/master/README_QUILT1.md> (optional)
+- [PLINK]<https://www.cog-genomics.org/plink/2.0/>
+- [EMU]<https://github.com/Rosemeis/emu> (optional)
 
 #### System requirements
 In order to use the set of tools in NIPT-human-genetics, we require a modern Linux operating system and a version of GCC > 4.4. 
