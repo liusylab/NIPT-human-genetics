@@ -1,19 +1,44 @@
-# NIPT-human-genetics
-## A tutorial to utilize NIPT sequencing data resource for human genetic investigation
+<p align="center">
+  <a href="https://github.com/liusylab/NIPT-human-genetics">
+    <img height="150" src="docs/assets/images/NIPT-Human-Genetics.png">
+  </a>
+  <h1 align="center">NIPT-human-genetics</h1>
+</p>
 
-### Features
-NIPT-human-genetics is a set of tools for analysing large-scale NIPT sequencing data for human genetic investigation
+
+### Introduction
+- NIPT-human-genetics is a set of tools for analysing large-scale NIPT sequencing data for human genetic investigation such as SNP detection and allele frequency estimation, individual genotype imputation, kinship estimation, population structure inference and genome-wide association studies.
+
+### Citation
+Liu et al., [Utilizing Non-Invasive Prenatal Test Sequencing Data Resource for Human Genetic Investigation](https://www.biorxiv.org/content/10.1101/2023.12.11.570976v1).BioRxiv (2023)
+Liu et al., [genomic analyses from non-invasive prenatal testing reveal genetic associations, patterns of viral infections, and chinese population history](https://doi.org/10.1016/j.cell.2018.08.016).Cell 175.2 (2018): 347-359
 
 ### Pre-requistes
-- Installations of BaseVar, GLIMPSE, QUILT, and PLINK
+- Install BaseVar, GLIMPSE, QUILT, PLINK and EMU
+- [BaseVar]: <https://github.com/ShujiaHuang/basevar/tree/master>
+- [GLIMPSE]: <https://odelaneau.github.io/GLIMPSE/docs/installation>
+- [QUILT]: <https://github.com/rwdavies/QUILT/blob/master/README_QUILT1.md> (optional)
+- [PLINK]: <https://www.cog-genomics.org/plink/2.0/>
+- [EMU]: <https://github.com/Rosemeis/emu> (optional)
 
-### Environment
-- The examples were run with SLURM workload manager in a Unix system. Commands can be adapted to other Unix/Linux systems. 
+#### System requirements
+In order to use the set of tools in NIPT-human-genetics, we require a modern Linux operating system and a version of GCC > 4.4. 
+The enclosed shell examples were run with SLURM workload manager in a Red Hat 8.4.1-1 system. Commands can be adapted to other workload manager and Linux systems.
 
-### Maximum likelihood model for SNP discovery and allele frequency estimation
-BaseVar (v0.8.0): <https://github.com/ShujiaHuang/basevar/releases/tag/v0.8.0>
-#### simulation: 
+### Installation
+wget https://github.com/liusylab/NIPT-human-genetics/archive/refs/heads/main.zip
+unzip main.zip
+cd NIPT-human-genetics-main
+
+### Step-by-step tutorial
+#### simulation (optional)
+- cd basevar_simulation
 - [step1.basevar.simulation.sh](./basevar_simulation/step1.basevar.simulation.sh)
+- sh step1.basevar.simulation.sh
+
+### Maximum likelihood model for SNP discovery and allele frequency estimation with BaseVar
+- [step1.]
+
 ### Gibbs sampling and hidden markov model for genotype imputation
 #### genotype imputation using GLIMPSE (version 1.1.1)
 - [step1_reference_panle_prepare.sh](./glimpse_imputation/step1_reference_panle_prepare.sh)
