@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/liusylab/NIPT-human-genetics">
-    <img height="150" src="https://github.com/liusylab/NIPT-human-genetics/blob/main/docs/assets/images/NIPT-Human-Genetics.png">
+    <img height="250" src="https://github.com/liusylab/NIPT-human-genetics/blob/main/docs/assets/images/NIPT-Human-Genetics.png">
   </a>
   <h1 align="center">NIPT-human-genetics</h1>
 </p>
