@@ -45,11 +45,20 @@ The enclosed shell examples were run with SLURM workload manager in a Red Hat 8.
 - sh step1.basevar.simulation.sh
 
 ### Maximum likelihood model for SNP discovery and allele frequency estimation with BaseVar
-####Command Line
+#### Command Line
 - [step1_workflow_alignment.sh](./basevar/step1_workflow_alignment.sh)
 - [step2_basevar.sh](./basevar/step2_basevar.sh)
 
-####Bash Shell
+#### Bash Shell
+```bash
+hg38=Homo_sapiens_assembly38.fasta
+hg38_index_prefix=Homo_sapiens_assembly38.fasta.gz
+gatk_bundle_dir=hg38_gatk_bundle/hg38
+lane_id=$1
+sample_id=$2
+fq=$3
+```
+
 ```bash
 #bwa alignment
 $bwa aln -e 10 -t 8 -i 5 -q 0 $hg38_index_prefix $fq > $outdir/${sample_id}.sai && \
@@ -108,7 +117,6 @@ $basevar basetype -R $hg38 \
     --nCPU 4
 ```
 
-
 ### Gibbs sampling and hidden markov model for genotype imputation
 #### genotype imputation using GLIMPSE (version 1.1.1)
 - [step1_reference_panle_prepare.sh](./glimpse_imputation/step1_reference_panle_prepare.sh)
@@ -116,7 +124,57 @@ $basevar basetype -R $hg38 \
 - [step2_3_merge_GLs_chunk.sh](./glimpse_imputation/step2_3_merge_GLs_chunk.sh)
 - [step3_phase.sh](./glimpse_imputation/step3_phase.sh)
 - [step4_ligate.sh](./glimpse_imputation/step4_ligate.sh)
-- [step5_accuracy.sh](./glimpse_imputation/step5_accuracy.sh)
+- [step5_accuracy.sh](./glimpse_imputation/step5_accuracy.sh) (optional)
+
+```bash
+#step1_reference_panle_prepare.sh
+##Conduct normalization and filtration of the reference panel
+$bcftools norm -m -any ${reference_path}/chr${i}.vcf.gz -Ou --threads 8 | $bcftools view -m 2 -M 2 -v snps -i 'MAF>0.001' --threads 8 -Oz -o ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.vcf.gz
+$bcftools index -f ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.vcf.gz
+
+##Extracting variable positions in the reference panel
+$bcftools view -G -m 2 -M 2 -v snps ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.vcf.gz -Oz -o ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.sites.vcf.gz --threads 8
+$bcftools index -f ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.sites.vcf.gz
+$bcftools query -f '%CHROM\\t%POS\\t%REF,%ALT\\n' ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.sites.vcf.gz | bgzip -c > ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.sites.tsv.gz
+$tabix -s1 -b2 -e2 ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.sites.tsv.gz
+```
+
+```bash
+#step2_Computing_GLs.sh
+VCF=${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.sites.vcf.gz
+TSV=${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.sites.tsv.gz
+$bcftools mpileup -f ${REFGEN} -I -E -a 'FORMAT/DP' -T \${VCF} -r chr${i} $line -Ou | bcftools call -Aim -C alleles -T \${TSV} -Oz -o ${work_path}/GL_file/${name}.chr${i}.vcf.gz
+$bcftools index -f ${work_path}/GL_file/${name}.chr${i}.vcf.gz
+```
+
+```bash
+#step2_3_merge_GLs_chunk.sh
+ls ${work_path}/GL_file/*.chr${i}.vcf.gz > ${work_path}/GL_file/high_dep_100.chr${i}_GL_list.txt
+$bcftools merge -m none -r chr${i} -Oz -o ${work_path}/GL_file_merged/high_dep_100.chr${i}.vcf.gz -l ${work_path}/GL_file/high_dep_100.chr${i}_GL_list.txt
+$bcftools index -f ${work_path}/GL_file_merged/high_dep_100.chr${i}.vcf.gz
+$GLIMPSE_chunk --input ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.sites.vcf.gz --region chr${i} --window-size 2000000 --buffer-size 200000 --output ${work_path}/chunks.G10K.chr${i}.txt
+```
+
+```bash
+#step3_phase.sh
+$GLIMPSE_phase --input ${VCF} --reference ${REF} --map ${MAP} --input-region ${IRG} --output-region ${ORG} --output ${OUT}
+$bgzip ${OUT}
+$bcftools index -f ${OUT}.gz
+```
+
+```bash
+#step4_ligate.sh
+ls ${work_path}/imputed_file/high_dep_100.chr${i}.*.imputed.vcf.gz > ${work_path}/imputed_file/high_dep_100.chr${i}_imputed_list.txt
+$GLIMPSE_ligate --input ${work_path}/imputed_file/high_dep_100.chr${i}_imputed_list.txt --output ${work_path}/imputed_file_merged/high_dep_100.chr${i}_imputed.vcf
+$bgzip ${work_path}/imputed_file_merged/high_dep_100.chr${i}_imputed.vcf
+$bcftools index -f ${work_path}/imputed_file_merged/high_dep_100.chr${i}_imputed.vcf.gz
+```
+
+```bash
+#step5_accuracy.sh
+bcftools stats $true_set ${work_path}/imputed_file_merged/high_dep_100.chr20_imputed.vcf.gz -s - -t chr20 --af-tag "AF" --af-bins "0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1, 0.15, 0.2, 0.25, 0.5, 1" > ${work_path}/accuracy/high_dep_100.chr20_imputed.txt
+```
+
 
 #### genotype imputation using QUILT (version 1.0.4)
 - [quilt_1KGP.sh](./quilt_imputation/quilt_1KGP.sh)
