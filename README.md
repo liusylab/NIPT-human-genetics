@@ -10,8 +10,8 @@
 NIPT-human-genetics is a set of tools for analysing large-scale NIPT sequencing data for human genetic investigation such as SNP detection and allele frequency estimation, individual genotype imputation, kinship estimation, population structure inference and genome-wide association studies.
 
 ### Citation
-- Liu et al., [Utilizing Non-Invasive Prenatal Test Sequencing Data Resource for Human Genetic Investigation](https://www.biorxiv.org/content/10.1101/2023.12.11.570976v1).BioRxiv (2023)
-- Liu et al., [genomic analyses from non-invasive prenatal testing reveal genetic associations, patterns of viral infections, and chinese population history](https://doi.org/10.1016/j.cell.2018.08.016).Cell 175.2 (2018): 347-359
+- Liu et al., [Utilizing Non-Invasive Prenatal Test Sequencing Data Resource for Human Genetic Investigation](https://www.biorxiv.org/content/10.1101/2023.12.11.570976v1). BioRxiv (2023)
+- Liu et al., [genomic analyses from non-invasive prenatal testing reveal genetic associations, patterns of viral infections, and chinese population history](https://doi.org/10.1016/j.cell.2018.08.016). Cell 175.2 (2018): 347-359
 
 ### Pre-requistes
 #### Install BWA, Samtools, GATK, BaseVar, GLIMPSE, QUILT, PLINK and EMU
@@ -26,8 +26,7 @@ NIPT-human-genetics is a set of tools for analysing large-scale NIPT sequencing 
 
 #### Download reference datasets
 - [Human genome reference](ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz): <ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz>
-- [GATK bundle](https://gatk.broadinstitute.org/hc/en-us/articles/360035890811-Resource-bundle): <https://gatk.broadinstitute.org/hc/en-us/articles/360035890811-Resource-bundle>
-- 
+- [GATK bundle](https://gatk.broadinstitute.org/hc/en-us/articles/360035890811-Resource-bundle): <https://gatk.broadinstitute.org/hc/en-us/articles/360035890811-Resource-bundle> 
 
 ### System requirements
 In order to use the set of tools in NIPT-human-genetics, we require a modern Linux operating system, a version of GCC and JAVA.
@@ -172,22 +171,67 @@ $bcftools index -f ${work_path}/imputed_file_merged/high_dep_100.chr${i}_imputed
 
 ```bash
 #step5_accuracy.sh
-bcftools stats $true_set ${work_path}/imputed_file_merged/high_dep_100.chr20_imputed.vcf.gz -s - -t chr20 --af-tag "AF" --af-bins "0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1, 0.15, 0.2, 0.25, 0.5, 1" > ${work_path}/accuracy/high_dep_100.chr20_imputed.txt
+#bcftools stats $true_set ${work_path}/imputed_file_merged/high_dep_100.chr20_imputed.vcf.gz -s - -t chr20 --af-tag "AF" --af-bins "0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1, 0.15, 0.2, 0.25, 0.5, 1" > ${work_path}/accuracy/high_dep_100.chr20_imputed.txt
 ```
 
 
 #### genotype imputation using QUILT (version 1.0.4)
 - [quilt_1KGP.sh](./quilt_imputation/quilt_1KGP.sh)
 
+```bash
+#quilt_1KGP.sh
+/software/QUILT/QUILT.R \
+--outputdir=quilt_100_1KGP/output/ \
+--reference=quilt_100_1KGP/input/hg38/Homo_sapiens_assembly38.fasta \
+--buffer=250000 \
+--chr=chr20 \
+--regionStart=1 \
+--regionEnd=5000000 \
+--nGibbsSamples=7 \
+--n_seek_its=3 \
+--bamlist=quilt_100_1KGP/input/baoan_NIPT_110_bamlist.txt \
+--reference_haplotype_file=quilt_100_1KGP/input/1KGP_legend_haplotype/uniq_1KGP/legend_haplotype/1KGP.chr20.hap.gz \
+--reference_legend_file=quilt_100_1KGP/input/1KGP_legend_haplotype/uniq_1KGP/legend_haplotype/1KGP.chr20.legend.gz \
+--genetic_map_file=quilt_100_1KGP/input/genetic_map_file/CHS_chr20.txt.gz \
+--reference_populations=CHB,CHS,CDX \
+--nGen=1240 \
+--save_prepared_reference=TRUE
+```
+
 ### kinship estimation using PLINK (v2.00a3LM)
 - [step1_extract_deep_vcf_sample.sh](./kinship/step1_extract_deep_vcf_sample.sh)
 - [step2_plink_2_kinship.sh](./kinship/step2_plink_2_kinship.sh)
 - [step3_MERGE.R](./kinship/step3_MERGE.R)
 
+```bash
+#compute kinship with plink 2
+$plink2 --vcf $workdir/sample_extract_30n/extract.70608_GLs.merged.chr1-22.0.001.vcf.gz --make-king-table --out $workdir/plink2_kinship/70608_GLs.merged.chr1-22.0.001_maf --threads 24
+```
+
 ### Principal component analyses using PLINK (v2.00a3LM) or EMU (v.0.9)
 - [emu10.sh](./pca/emu10.sh)
 - [plink10.sh](./pca/plink10.sh)
 
+```bash
+#perform PCA with EMU
+$emu -m -p GLs.merged.chr1-22.redup.0.05 -e 10 -t 30 -o GLs.merged.chr1-22.redup.0.05.emu10
+```
+
+```bash
+#perform PCA with PLINK
+$plink2 --maf 0.05 --vcf GLs.merged.chr1-22.0.001.vcf.gz dosage=DS --pca 10 --out NIPT_rm_dup_merged.chr1-22.0.05_pca10 --threads 30
+```
+
 ### Genome-wide association studies using PLINK (v2.00a3LM)
 - [gwas.plink.sh](./gwas/gwas.plink.sh)
+
+```bash
+script1=./bin/get.pheno.py
+script2=./bin/g.worksh_1.py
+#clean and normalize phenotypes
+$python $script1 $allpheno_table $allsample $pheno >$outdir/$pheno/input/${pheno}_pheno.table
+
+#generate plink shell
+$python $script2 $vcflist $outdir/$pheno/output/plink/ $covar9 $pheno $phenotable $hweinfo linear > $outdir/$pheno/bin/step1.plink.work.sh
+```
 
