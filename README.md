@@ -65,12 +65,11 @@ $ [step1.basevar.simulation.sh](./basevar_simulation/step1.basevar.simulation.sh
 $ sh step1.basevar.simulation.sh
 ```
 
-Maximum likelihood model for SNP discovery and allele frequency estimation with BaseVar
 ---------------------------------------------------------------------------------------
 
-### Step 1: Alignment
+### Step 1: Alignment and statistics
 
-- [step2_basevar.sh](./basevar/step2_basevar.sh)
+- [step1_workflow_alignment.sh](./basevar/step1_workflow_alignment.sh)
 
 
 **1. shell script for bwa alignment**
@@ -134,6 +133,13 @@ java -jar $gatk \
 samtools stats $outdir/${sample_id}.sorted.rmdup.realign.BQSR.bam > $outdir/${sample_id}.sorted.rmdup.realign.BQSR.bamstats
 bedtools genomecov -ibam $outdir/${sample_id}.sorted.rmdup.realign.BQSR.bam -bga -split | bgzip > $outdir/${sample_id}.sorted.rmdup.realign.BQSR.cvg.bed.gz && tabix -p bed $outdir/${sample_id}.sorted.rmdup.realign.BQSR.cvg.bed.gz
 
+```
+
+### Step 1: Maximum likelihood model for SNP discovery and allele frequency estimation with BaseVar
+---------------------------------------------------------------------------------------
+- [step2_basevar.sh](./basevar/step2_basevar.sh)
+
+```bash
 basevar basetype -R $hg38 \
     --regions chr11:5246595-5248428,chr17:41197764-41276135 \
     --batch-count 50 \
