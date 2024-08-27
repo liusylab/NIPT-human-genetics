@@ -9,7 +9,7 @@
 Introduction
 ------------
 
-NIPT-human-genetics is a set of tools for analysing large-scale NIPT sequencing data for human genetic investigation such as SNP detection and allele frequency estimation, individual genotype imputation, kinship estimation, population structure inference and genome-wide association studies.
+NIPT-human-genetics is a workflow for analysing large-scale NIPT sequencing data for human genetic investigation such as SNP detection, allele frequency estimation, individual genotype imputation, kinship estimation, population structure inference and genome-wide association studies.
 
 
 Citation
@@ -44,19 +44,21 @@ System requirements
 -------------------
 
 In order to use the set of tools in NIPT-human-genetics, we require a modern Linux operating system, a version of GCC and JAVA.
-The enclosed shell examples were run with SLURM workload manager in a Red Hat 8.4.1-1 system. Commands can be adapted to other workload manager and Linux systems.
+The enclosed shell [examples](https://github.com/liusylab/NIPT-human-genetics/tree/main/example) were run with SLURM workload manager in a Red Hat 8.4.1-1 system. Commands can be adapted to other workload manager and Linux systems.
 
 ### Installation
 
 ```bash
-$ wget https://github.com/liusylab/NIPT-human-genetics/archive/refs/heads/main.zip
-$ unzip main.zip
-$ cd NIPT-human-genetics-main
+$ git clone https://github.com/liusylab/NIPT-human-genetics.git
+$ cd NIPT-human-genetics
 ```
 
 Quick Start
 -----------
+Command line users can refer to this example for [examples](https://github.com/liusylab/NIPT-human-genetics/tree/main/example). 
 
+
+---------------------------------------------------------------------------------------
 ### Simulation experiments assessing the performance of BaseVar (optional)
 
 ```bash
@@ -135,8 +137,8 @@ bedtools genomecov -ibam $outdir/${sample_id}.sorted.rmdup.realign.BQSR.bam -bga
 
 ```
 
-### Step 1: Maximum likelihood model for SNP discovery and allele frequency estimation with BaseVar
 ---------------------------------------------------------------------------------------
+### Step 2: Maximum likelihood model for SNP discovery and allele frequency estimation with BaseVar
 - [step2_basevar.sh](./basevar/step2_basevar.sh)
 
 ```bash
@@ -150,12 +152,12 @@ basevar basetype -R $hg38 \
 ```
 
 
-Gibbs sampling and hidden markov model for genotype imputation
 ---------------------------------------------------------------
+### Step 3: Gibbs sampling and hidden markov model for genotype imputation
 
 ### Genotype imputation using GLIMPSE (version 1.1.1)
 
-**Step 1: Preparing the reference panel**
+**S1: Preparing the reference panel and chunks**
 
 ```bash
 ## Conduct normalization and filtration of the reference panel
@@ -169,7 +171,7 @@ bcftools query -f '%CHROM\\t%POS\\t%REF,%ALT\\n' ${work_path}/reference_file/chr
 tabix -s1 -b2 -e2 ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.sites.tsv.gz
 ```
 
-**Step 2: Computing Genotype Likelihoods**
+**S2: Computing Genotype Likelihoods**
 
 ```bash
 VCF=${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.sites.vcf.gz
@@ -179,7 +181,7 @@ bcftools mpileup -f ${REFGEN} -I -E -a 'FORMAT/DP' -T \${VCF} -r chr${i} $line -
 bcftools index -f ${work_path}/GL_file/${name}.chr${i}.vcf.gz
 ```
 
-**Step 3: Merge the genotype likelihood by chunk**
+**S3: Merge the genotype likelihood by chunk**
 
 ```bash
 ls ${work_path}/GL_file/*.chr${i}.vcf.gz > ${work_path}/GL_file/high_dep_100.chr${i}_GL_list.txt
@@ -188,7 +190,7 @@ bcftools index -f ${work_path}/GL_file_merged/high_dep_100.chr${i}.vcf.gz
 GLIMPSE_chunk --input ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.sites.vcf.gz --region chr${i} --window-size 2000000 --buffer-size 200000 --output ${work_path}/chunks.G10K.chr${i}.txt
 ```
 
-**Step 4: Phasing by GLIMPSE**
+**S4: Phasing by GLIMPSE**
 
 ```bash
 GLIMPSE_phase --input ${VCF} --reference ${REF} --map ${MAP} --input-region ${IRG} --output-region ${ORG} --output ${OUT}
@@ -196,7 +198,7 @@ bgzip ${OUT}
 bcftools index -f ${OUT}.gz
 ```
 
-**Step 5: Ligate**
+**S5: Ligate**
 
 ```bash
 ls ${work_path}/imputed_file/high_dep_100.chr${i}.*.imputed.vcf.gz > ${work_path}/imputed_file/high_dep_100.chr${i}_imputed_list.txt
@@ -205,15 +207,15 @@ bgzip ${work_path}/imputed_file_merged/high_dep_100.chr${i}_imputed.vcf
 bcftools index -f ${work_path}/imputed_file_merged/high_dep_100.chr${i}_imputed.vcf.gz
 ```
 
-**Step 6: Calculating the accuracy (Optinal)**
+**S6: Calculating the accuracy (Optinal)**
 
 ```bash
 bcftools stats $true_set ${work_path}/imputed_file_merged/high_dep_100.chr20_imputed.vcf.gz -s - -t chr20 --af-tag "AF" --af-bins "0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1, 0.15, 0.2, 0.25, 0.5, 1" > ${work_path}/accuracy/high_dep_100.chr20_imputed.txt
 ```
 
-
+---------------------------------------------------------------
+### Step 3: Gibbs sampling and hidden markov model for genotype imputation
 ### Genotype imputation using QUILT (version 1.0.4)
-
 
 **Shell scripts for QUILT**
 
@@ -238,8 +240,9 @@ bcftools stats $true_set ${work_path}/imputed_file_merged/high_dep_100.chr20_imp
 ```
 
 
-kinship estimation using PLINK (v2.00a3LM)
 ------------------------------------------
+### Step 4: kinship estimation using PLINK (v2.00a3LM)
+
 - [step1_extract_deep_vcf_sample.sh](./kinship/step1_extract_deep_vcf_sample.sh)
 - [step2_plink_2_kinship.sh](./kinship/step2_plink_2_kinship.sh)
 - [step3_MERGE.R](./kinship/step3_MERGE.R)
