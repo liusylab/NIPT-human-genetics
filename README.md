@@ -43,7 +43,7 @@ NIPT-human-genetics is a workflow for analysing large-scale NIPT sequencing data
 ### System requirements
 
 In order to use the set of tools in NIPT-human-genetics, we require a modern Linux operating system, a version of GCC and JAVA.
-The enclosed shell [examples](https://github.com/liusylab/NIPT-human-genetics/tree/main/example) were run with SLURM workload manager in a Red Hat 8.4.1-1 system. Commands can be adapted to other workload manager and Linux systems.
+The enclosed shell [example](https://github.com/liusylab/NIPT-human-genetics/tree/main/example) were run with SLURM workload manager in a Red Hat 8.4.1-1 system. Commands can be adapted to other workload manager and Linux systems.
 
 ### Installation
 -----------
@@ -54,7 +54,7 @@ $ cd NIPT-human-genetics
 
 ### Quick Start
 -----------
-Command line users can refer to this example for [examples](https://github.com/liusylab/NIPT-human-genetics/tree/main/example). 
+Command line users can refer to this example [example](https://github.com/liusylab/NIPT-human-genetics/tree/main/example) for quick start
 
 
 ---------------------------------------------------------------------------------------
@@ -71,7 +71,7 @@ $ sh step1.basevar.simulation.sh
 
 ### Step 1: Alignment and statistics
 
-- [step1_workflow_alignment.sh](./basevar/step1_workflow_alignment.sh)
+- [step1.alignment.sh](./example/bin/step1.alignment.sh)
 
 
 **1. shell script for bwa alignment**
@@ -139,7 +139,7 @@ bedtools genomecov -ibam $outdir/${sample_id}.sorted.rmdup.realign.BQSR.bam -bga
 
 ---------------------------------------------------------------------------------------
 ### Step 2: Maximum likelihood model for SNP discovery and allele frequency estimation with BaseVar
-- [step2_basevar.sh](./basevar/step2_basevar.sh)
+- [step2_basevar.sh](./example/step2.basevar.sh)
 
 ```bash
 basevar basetype -R $hg38 \
