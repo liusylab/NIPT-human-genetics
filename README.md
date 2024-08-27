@@ -245,7 +245,8 @@ bcftools stats $true_set ${work_path}/imputed_file_merged/high_dep_100.chr20_imp
 
 ------------------------------------------
 ### Step 4: kinship estimation using PLINK (v2.00a3LM)
-- [step4.plink.kinship.sh](./example/bin/step4.plink.kinship.sh)
+- [step4.plink.kinship.s1.sh](./example/bin/step4.plink.kinship.s1.sh)
+- [step4.plink.kinship.s2.sh](./example/bin/step4.plink.kinship.s2.sh)
 
 
 **Step 1: Compute kinship with plink2**
@@ -259,73 +260,36 @@ $plink2 --vcf $imputed_vcf --king-cutoff-table 0.177 --out $kinship_outdir/$pref
 ```
 
 
-Principal component analyses using PLINK (v2.00a3LM) or EMU (v.0.9)
 -------------------------------------------------------------------
-
+### Step 5: Principal component analyses using PLINK (v2.00a3LM) or EMU (v.0.9)
+- [step5.emu.pca.sh](./example/bin/step5.emu.pca.sh)
+- [step5.plink.pca.sh](./example/bin/step5.plink.pca.sh)
 
 **Perform PCA with EMU**
-
-
 ```bash
-#!/bin/bash
-#SBATCH -J emu10_baoan_all
-#SBATCH --nodes=1                  
-#SBATCH --ntasks-per-node=30
-#SBATCH --time=50-00:00:00
-#SBATCH --mem=204800
-#SBATCH -p bigmem
-echo "process will start at : "
-date
-echo "++++++++++++++++++++++++++++++++++++++++"
-emu -m -p GLs.merged.chr1-22.redup.0.05 -e 10 -t 30 -o GLs.merged.chr1-22.redup.0.05.emu10
-echo "processs will sleep 30s"
-sleep 30
-echo "process end at : "
-date
+$emu -m -p $imputed_vcf -e 10 -t 30 -o $imputed_vcf.emu10
 ```
 
 
 **Perform PCA with PLINK**
-
-
 ```bash
-#!/bin/sh
-#SBATCH -J Baoan_PCA10
-#SBATCH --nodes=1                  
-#SBATCH --ntasks-per-node=30
-#SBATCH --time=10-05:05:30
-#SBATCH --mem=100G
-#SBATCH --partition=bigmem
-#SBATCH --output=slurm_Baoan_unimputed_PCA10
-echo "process will start at : "
-date
-echo "++++++++++++++++++++++++++++++++++++++++"
-plink2 --maf 0.05 --vcf GLs.merged.chr1-22.0.001.vcf.gz dosage=DS --pca 10 --out NIPT_rm_dup_merged.chr1-22.0.05_pca10 --threads 30
-
-echo "++++++++++++++++++++++++++++++++++++++++"
-echo "processs will sleep 10s" 
-sleep 10
-echo "process end at : "
-date
+$plink2 --maf 0.05 --vcf $imputed_vcf dosage=DS --pca 10 --out $imputed_vcf.pca10 --threads 30
 ```
 
-Genome-wide association studies by using PLINK(v2.00a3LM)
 ---------------------------------------------------------
+### Step 6: Genome-wide association studies by using PLINK (v2.00a3LM)
+- [step6.gwas.s1.sh](./example/bin/step6.gwas.s1.sh)
+- [step6.gwas.s2.sh](./example/bin/step6.gwas.s2.sh)
 
 ```bash
-#!/bin/sh
 #---
-#Perform genome wide association analysis using plink
+#Perform genome-wide association analysis using plink
 #Step1 perform inverse rank transformation (quantile transformation) for phenotypic data
 #Step2 generate plink shell
 #---
 
-outdir=./230914_GWAS/output/
-mkdir -p $outdir
-
 script1=./bin/get.pheno.py
 script2=./bin/g.worksh_1.py
-R=`which Rscript`
 
 allpheno_table=./230914_GWAS/input/coding1.txt  
 
@@ -335,13 +299,6 @@ covar9=./230914_GWAS/input/plink.PC1-5.maternalAge.bmi.gw.xCov.txt
 hweinfo=./database/Baoan.all.snp.info.gz
 imputevcf=./database/hg38.all.stitch.bed.sorted.dbsnp.gwas.clinvar.snpeff.vcf.gz
 
-for pheno in VA VK
-do
-    #pheno=$line    
-    mkdir -p $outdir/$pheno/input/
-    mkdir -p $outdir/$pheno/output/plink/
-    mkdir -p $outdir/$pheno/output/plink_merge/
-    mkdir -p $outdir/$pheno/bin
 
 #---
 #Step1 clean and normalize phenotypes
