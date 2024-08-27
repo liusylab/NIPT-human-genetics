@@ -1,26 +1,26 @@
 <p align="center">
-  <a href="https://github.com/liusylab/NIPT-human-genetics">
+  <<F2>a href="https://github.com/liusylab/NIPT-human-genetics">
     <img height="300" src="https://github.com/liusylab/NIPT-human-genetics/blob/main/docs/assets/images/NIPT-Human-Genetics.png">
   </a>
   <h1 align="center">NIPT-human-genetics</h1>
 </p>
 
 
-Introduction
+### Introduction
 ------------
 
 NIPT-human-genetics is a workflow for analysing large-scale NIPT sequencing data for human genetic investigation such as SNP detection, allele frequency estimation, individual genotype imputation, kinship estimation, population structure inference and genome-wide association studies.
 
 
-Citation
+### Citation
 --------
 
-- Liu et al., [Utilizing Non-Invasive Prenatal Test Sequencing Data Resource for Human Genetic Investigation](https://www.biorxiv.org/content/10.1101/2023.12.11.570976v1). BioRxiv (2023)
+- Liu et al., [Utilizing Non-Invasive Prenatal Test Sequencing Data for Human Genetic Investigation](https://www.biorxiv.org/content/10.1101/2023.12.11.570976v1). BioRxiv (2023)
 
-- Liu et al., [genomic analyses from non-invasive prenatal testing reveal genetic associations, patterns of viral infections, and chinese population history](https://doi.org/10.1016/j.cell.2018.08.016). Cell 175.2 (2018): 347-359
+- Liu et al., [Genomic analyses from non-invasive prenatal testing reveal genetic associations, patterns of viral infections, and chinese population history](https://doi.org/10.1016/j.cell.2018.08.016). Cell 175.2 (2018): 347-359
 
 
-Pre-requistes
+### Pre-requistes
 -------------
 
 ### Install BWA, Samtools, GATK, BaseVar, GLIMPSE, QUILT, PLINK and EMU
@@ -40,25 +40,25 @@ Pre-requistes
 - [GATK bundle](https://gatk.broadinstitute.org/hc/en-us/articles/360035890811-Resource-bundle): <https://gatk.broadinstitute.org/hc/en-us/articles/360035890811-Resource-bundle> 
 
 
-System requirements
--------------------
+### System requirements
 
 In order to use the set of tools in NIPT-human-genetics, we require a modern Linux operating system, a version of GCC and JAVA.
 The enclosed shell [examples](https://github.com/liusylab/NIPT-human-genetics/tree/main/example) were run with SLURM workload manager in a Red Hat 8.4.1-1 system. Commands can be adapted to other workload manager and Linux systems.
 
 ### Installation
-
+-----------
 ```bash
 $ git clone https://github.com/liusylab/NIPT-human-genetics.git
 $ cd NIPT-human-genetics
 ```
 
-Quick Start
+### Quick Start
 -----------
 Command line users can refer to this example for [examples](https://github.com/liusylab/NIPT-human-genetics/tree/main/example). 
 
 
 ---------------------------------------------------------------------------------------
+
 ### Simulation experiments assessing the performance of BaseVar (optional)
 
 ```bash
