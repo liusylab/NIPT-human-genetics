@@ -282,36 +282,21 @@ $plink2 --maf 0.05 --vcf $imputed_vcf dosage=DS --pca 10 --out $imputed_vcf.pca1
 - [step6.gwas.s2.sh](./example/bin/step6.gwas.s2.sh)
 
 ```bash
-#---
-#Perform genome-wide association analysis using plink
-#Step1 perform inverse rank transformation (quantile transformation) for phenotypic data
-#Step2 generate plink shell
-#---
+script1=gwas/get.pheno.py
+script2=gwas/generate_plink_tasks.py
 
-script1=./bin/get.pheno.py
-script2=./bin/g.worksh_1.py
-
-allpheno_table=./230914_GWAS/input/coding1.txt  
+allpheno_table=example/data/phenotype.txt  
 
 allsample=./database/pheno.table
-vcflist=./230914_GWAS/input/hospital_vcf_list.txt
-covar9=./230914_GWAS/input/plink.PC1-5.maternalAge.bmi.gw.xCov.txt
-hweinfo=./database/Baoan.all.snp.info.gz
-imputevcf=./database/hg38.all.stitch.bed.sorted.dbsnp.gwas.clinvar.snpeff.vcf.gz
+vcflist=$imputed_vcf.list
+covariates=example/data/covariates.txt
 
+#Step1 clean and normalize phenotypes using inverse rank transformation (quantile transformation)
+$python  $allpheno_table $allsample $pheno >$outdir/${pheno}_pheno.table
 
-#---
-#Step1 clean and normalize phenotypes
-#---
-python $script1 $allpheno_table $allsample $pheno >$outdir/$pheno/input/${pheno}_pheno.table
-phenotable=$outdir/$pheno/input/${pheno}_pheno.table
-
-#---
 #Step 2 generate plink shell
-#---
 python $script2 $vcflist $outdir/$pheno/output/plink/ $covar9 $pheno $phenotable $hweinfo linear > $outdir/$pheno/bin/step1.plink.work.sh
 
-done
 ```
 
 
