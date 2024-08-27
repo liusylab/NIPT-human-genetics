@@ -155,7 +155,7 @@ basevar basetype -R $hg38 \
 ---------------------------------------------------------------
 ### Step 3: Gibbs sampling and hidden markov model for genotype imputation
 
-### Option1: Genotype imputation using GLIMPSE (version 1.1.1)
+### Option 1: Genotype imputation using GLIMPSE (version 1.1.1)
 - [step3.glimpse.s1.reference_panel_prepare.sh](./example/bin/step3.glimpse.s1.reference_panel_prepare.sh)
 - [step3.glimpse.s2.computeGLs.sh](./example/bin/step3.glimpse.s2.computeGLs.sh)
 - [step3.glimpse.s3.mergeGLs.sh](./example/bin/step3.glimpse.s3.mergeGLs.sh)
@@ -219,9 +219,10 @@ bcftools stats $true_set ${work_path}/imputed_file_merged/high_dep_100.chr20_imp
 ```
 
 ### Option 2: Genotype imputation using QUILT (version 1.0.4)
+- [step3.quilt.s1.reference_panel_prepare.sh](./example/bin/step3.quilt.s1.reference_panel_prepare.sh)
+- [step3.quilt.s2.imputation.sh](./example/bin/step3.quilt.s2.imputation.sh)
 
 **Shell scripts for QUILT**
-
 
 ```bash
 /software/QUILT/QUILT.R \
@@ -242,67 +243,19 @@ bcftools stats $true_set ${work_path}/imputed_file_merged/high_dep_100.chr20_imp
 --save_prepared_reference=TRUE
 ```
 
-
 ------------------------------------------
 ### Step 4: kinship estimation using PLINK (v2.00a3LM)
+- [step4.plink.kinship.sh](./example/bin/step4.plink.kinship.sh)
 
-- [step1_extract_deep_vcf_sample.sh](./kinship/step1_extract_deep_vcf_sample.sh)
-- [step2_plink_2_kinship.sh](./kinship/step2_plink_2_kinship.sh)
-- [step3_MERGE.R](./kinship/step3_MERGE.R)
 
-**Step 1: Extract**
-
+**Step 1: Compute kinship with plink2**
 ```bash
-#!/bin/sh
-#SBATCH -J baoan_extract_vcf_sample_10K
-#SBATCH --nodes=1
-#SBATCH --ntasks-per-node=30
-#SBATCH --time=07-00:00:00
-#SBATCH --mem=50G
-#SBATCH -p bigmem
-#SBATCH --output=slurm_baoan_extract_vcf_sample_10K
-
-workdir=./kinship
-bcftools view --force-samples -S identical_samples_kinship_SampleID.txt $workdir/unimpute_vcf_file/baoan_70608_GLs.merged.chr1-22.0.001.vcf.gz -Oz -o $workdir/sample_extract_30n/extract.70608_GLs.merged.chr1-22.0.001.vcf.gz
-tabix $workdir/sample_extract_30n/extract.70608_GLs.merged.chr1-22.0.001.vcf.gz
-
-echo "OK"
-echo "process end at : "
-date
-
+$plink2 --vcf $imputed_vcf --make-king-table --out $kinship_outdir/$prefix --threads 24
 ```
 
-**Step 2: Compute kinship with plink2**
-
+**Step 2: Exclude samples based on kinship**
 ```bash
-#!/bin/sh
-#SBATCH --nodes=1                  
-#SBATCH --ntasks-per-node=24
-#SBATCH --time=06-00:00:00
-#SBATCH --mem=50G
-#SBATCH --partition=bigmem
-#SBATCH --job-name=baoan_kinship
-#SBATCH --output=/kinship
-workdir=/kinship
-plink2 --vcf $workdir/sample_extract_30n/extract.70608_GLs.merged.chr1-22.0.001.vcf.gz --make-king-table --out $workdir/plink2_kinship/70608_GLs.merged.chr1-22.0.001_maf --threads 24
-```
-
-**Step 3: merge by R**
-
-```r
-#! /usr/local/bin Rscriptlibrary(dplyr)
-library(dplyr)
-library(data.table)
-library(R.utils)
-library(tidyr)
-workdir<-/kinship
-input_file<-fread('$workdir/plink2_kinship/70608_GLs.merged.chr1-22.0.001_maf.kin0',header=T,sep="\t",stringsAsFactors = F)
-Sample_list<-fread('kinship_files/kinship_match.txt',header=T,sep="\t",stringsAsFactors = F)
-colnames(input_file)<-c("nipt_id.y","nipt_id.x","NSNP","HETHET","IBS0","KINSHIP")
-colnames(Sample_list)<-c("nipt_id.x","nipt_id.y","seq_dep.x","seq_dep.y","coef")
-merge_file<-merge(input_file,Sample_list,by=c("nipt_id.x","nipt_id.y"))
-write.table(merge_file,'$workdir/plink2_kinship_merge/merge.70608_GLs.merged.chr1-22.0.001_maf.kin0',quote=FALSE,row.names=FALSE,col.names=T,sep = "\t")
-
+$plink2 --vcf $imputed_vcf --king-cutoff-table 0.177 --out $kinship_outdir/$prefix --threads 24
 ```
 
 
