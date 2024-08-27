@@ -139,7 +139,7 @@ bedtools genomecov -ibam $outdir/${sample_id}.sorted.rmdup.realign.BQSR.bam -bga
 
 ---------------------------------------------------------------------------------------
 ### Step 2: Maximum likelihood model for SNP discovery and allele frequency estimation with BaseVar
-- [step2_basevar.sh](./example/step2.basevar.sh)
+- [step2_basevar.sh](./example/bin/step2.basevar.sh)
 
 ```bash
 basevar basetype -R $hg38 \
@@ -155,7 +155,12 @@ basevar basetype -R $hg38 \
 ---------------------------------------------------------------
 ### Step 3: Gibbs sampling and hidden markov model for genotype imputation
 
-### Genotype imputation using GLIMPSE (version 1.1.1)
+### Option1: Genotype imputation using GLIMPSE (version 1.1.1)
+- [step3.glimpse.s1.reference_panel_prepare.sh](./example/bin/step3.glimpse.s1.reference_panel_prepare.sh)
+- [step3.glimpse.s2.computeGLs.sh](./example/bin/step3.glimpse.s2.computeGLs.sh)
+- [step3.glimpse.s3.mergeGLs.sh](./example/bin/step3.glimpse.s3.mergeGLs.sh)
+- [step3.glimpse.s4.phase.sh](./example/bin/step3.glimpse.s4.phase.sh)
+- [step3.glimpse.s5.ligate.sh](./example/bin/step3.glimpse.s5.ligate.sh)
 
 **S1: Preparing the reference panel and chunks**
 
@@ -213,9 +218,7 @@ bcftools index -f ${work_path}/imputed_file_merged/high_dep_100.chr${i}_imputed.
 bcftools stats $true_set ${work_path}/imputed_file_merged/high_dep_100.chr20_imputed.vcf.gz -s - -t chr20 --af-tag "AF" --af-bins "0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1, 0.15, 0.2, 0.25, 0.5, 1" > ${work_path}/accuracy/high_dep_100.chr20_imputed.txt
 ```
 
----------------------------------------------------------------
-### Step 3: Gibbs sampling and hidden markov model for genotype imputation
-### Genotype imputation using QUILT (version 1.0.4)
+### Option 2: Genotype imputation using QUILT (version 1.0.4)
 
 **Shell scripts for QUILT**
 
