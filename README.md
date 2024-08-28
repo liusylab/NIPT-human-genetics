@@ -9,17 +9,17 @@
 ### Introduction
 ------------
 
-**NIPT-human-genetics** is a **semi-automated** workflow for analysing large-scale ultra-low-pass non-invasive prenatal test (NIPT) sequencing data for human genetic investigation such as SNP detection, allele frequency estimation, individual genotype imputation, kinship estimation, population structure inference and genome-wide association studies. It has been used in the following studies [Liu et al]:<https://doi.org/10.1016/j.cell.2018.08.016>, [Yang et al]:<https://doi.org/10.1182/blood.2023021925>,. The word **semi-automated** means it cannot excute jobs and users need to submit the jobs by themselves, following to their computational systems settings.
+**NIPT-human-genetics** is a **semi-automated** workflow designed for the analysis of large-scale ultra-low-pass non-invasive prenatal test (NIPT) sequencing data in human genetic studies. This includes SNP detection, allele frequency estimation, individual genotype imputation, kinship estimation, population structure inference, and genome-wide association studies (GWAS). The workflow has been utilized in several studies, including [Liu et al](<https://doi.org/10.1016/j.cell.2018.08.016>), [Yang et al](<https://doi.org/10.1182/blood.2023021925>), [Zhen et al](<https://doi.org/10.1007/s00125-023-06065-5>), as well as in other works currently under reviews or in press. The term **semi-automated** indicates that while the workflow faciliates the analysis process, users must manually submit jobs according to their specific computational systems settings, allowing for flexibity in execution.
 
-**NIPT-human-genetics** contains the following modules
-- Alignment and statistics of NIPT sequencing data
+**NIPT-human-genetics** includes the following modules:
+- Alignment and statistical analysis of NIPT sequencing data
 - SNP discovery and allele frequency estimation using a maximum likelihood model implemented in BASEVAR
-- Genotype imputation using hidden markov model implemented by GLIMPSE or QUILT
+- Genotype imputation using a hidden Markov model implemented by GLIMPSE or QUILT
 - Kinship estimation
-- Principal component analysis 
+- Principal component analysis (PCA)
+- Genome-wide association study (GWAS)
 
-
-
+Additional moduldes, such as more accurate genotype imputation, kinship inference and enhanced GWAS analysis, are currently under development. 
 
 ### Citation
 --------
@@ -64,7 +64,6 @@ $ cd NIPT-human-genetics
 ### Quick Start
 -----------
 Command line users can refer to this example [example](https://github.com/liusylab/NIPT-human-genetics/tree/main/example) for quick start
-
 
 ---------------------------------------------------------------------------------------
 
