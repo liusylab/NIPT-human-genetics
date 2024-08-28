@@ -8,7 +8,7 @@
 </p>
 
 
-### Introduction
+Introduction
 ------------
 
 **NIPT-human-genetics** is a **semi-automated** workflow designed for the analysis of large-scale ultra-low-pass non-invasive prenatal test (NIPT) sequencing data in human genetic studies. This includes SNP detection, allele frequency estimation, individual genotype imputation, kinship estimation, population structure inference, and genome-wide association studies (GWAS). The workflow has been utilized in several studies, including [Liu et al](<https://doi.org/10.1016/j.cell.2018.08.016>), [Yang et al](<https://doi.org/10.1182/blood.2023021925>), [Zhen et al](<https://doi.org/10.1007/s00125-023-06065-5>), as well as in other works currently under reviews or in press. The term **semi-automated** indicates that while the workflow faciliates the analysis process, users must manually submit jobs according to their specific computational systems settings, allowing for flexibity in execution.
@@ -23,7 +23,7 @@
 
 Additional moduldes, such as more accurate genotype imputation, kinship inference and enhanced GWAS analysis, are currently under development. 
 
-### Citation
+Citation
 --------
 
 - Liu et al., [Utilizing Non-Invasive Prenatal Test Sequencing Data for Human Genetic Investigation](https://www.biorxiv.org/content/10.1101/2023.12.11.570976v1). BioRxiv (2023)
@@ -31,7 +31,7 @@ Additional moduldes, such as more accurate genotype imputation, kinship inferenc
 - Liu et al., [Genomic analyses from non-invasive prenatal testing reveal genetic associations, patterns of viral infections, and chinese population history](https://doi.org/10.1016/j.cell.2018.08.016). Cell 175.2 (2018): 347-359
 
 
-### Pre-requistes
+Pre-requistes
 -------------
 
 ### Install BWA, Samtools, GATK, BaseVar, GLIMPSE, QUILT, PLINK and EMU
