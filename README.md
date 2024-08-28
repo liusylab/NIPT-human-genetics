@@ -75,7 +75,7 @@ The input data used in this example (2.1G) exceeds the storage capacity availabl
 
 ```bash
 $ cd basevar_simulation
-$ [step1.basevar.simulation.sh](./basevar_simulation/step1.basevar.simulation.sh)
+$ [module1.basevar.simulation.sh](./basevar_simulation/module1.basevar.simulation.sh)
 $ sh step1.basevar.simulation.sh
 ```
 
@@ -83,7 +83,7 @@ $ sh step1.basevar.simulation.sh
 Module 1: Alignment and statistics
 -----------
 
-- Bash script for this module [step1.alignment.sh](./example/bin/step1.alignment.sh)
+- Bash script for this module [module1.alignment.sh](./example/bin/module1.alignment.sh)
 - Below is an explanation of the analyses in this module 
 
 
@@ -159,7 +159,7 @@ $bedtools genomecov -ibam $outdir/${sample_id}.sorted.rmdup.realign.BQSR.bam -bg
 
 Module 2: SNP detection and allele frequency estimation with BaseVar
 ---------------------------------------------------------------------------------------
-- Bash script for this module [step2_basevar.sh](./example/bin/step2.basevar.sh)
+- Bash script for this module [module2_basevar.sh](./example/bin/module2.basevar.sh)
 - Explanation of the analyses in this module:
 
 In Module 2, we begin conducting some analyses in parallel. In the example, we process the data and perform variant detection and allele frequency estimation in 1 million basepair non-overlapping windows. To facilitate this parallelization, we use the pipeline generator **create_pipeline.py**, which distributes the computational tasks based on the --delta parameter across a specific chromosome defined by the -c parameter.
@@ -181,17 +181,18 @@ $basevar basetype -R $hg38 \
     --nCPU 4
 ```
 
-
----------------------------------------------------------------
-### Step 3: Gibbs sampling and hidden markov model for genotype imputation
+Module 3: Genotype imputation
+------------
 
 ### Option 1: Genotype imputation using GLIMPSE (version 1.1.1)
-- [step3.glimpse.s1.reference_panel_prepare.sh](./example/bin/step3.glimpse.s1.reference_panel_prepare.sh)
-- [step3.glimpse.s2.computeGLs.sh](./example/bin/step3.glimpse.s2.computeGLs.sh)
-- [step3.glimpse.s3.mergeGLs.sh](./example/bin/step3.glimpse.s3.mergeGLs.sh)
-- [step3.glimpse.s4.phase.sh](./example/bin/step3.glimpse.s4.phase.sh)
-- [step3.glimpse.s5.ligate.sh](./example/bin/step3.glimpse.s5.ligate.sh)
+- Bash script for this option are divided into five steps
+- [module3.glimpse.s1.reference_panel_prepare.sh](./example/bin/module3.glimpse.s1.reference_panel_prepare.sh)
+- [module3.glimpse.s2.computeGLs.sh](./example/bin/module3.glimpse.s2.computeGLs.sh)
+- [module3.glimpse.s3.mergeGLs.sh](./example/bin/module3.glimpse.s3.mergeGLs.sh)
+- [module3.glimpse.s4.phase.sh](./example/bin/module3.glimpse.s4.phase.sh)
+- [module3.glimpse.s5.ligate.sh](./example/bin/module3.glimpse.s5.ligate.sh)
 
+- Explanation of the analyses in this option:
 **S1: Preparing the reference panel and chunks**
 
 ```bash
@@ -249,8 +250,8 @@ bcftools stats $true_set ${work_path}/imputed_file_merged/high_dep_100.chr20_imp
 ```
 
 ### Option 2: Genotype imputation using QUILT (version 1.0.4)
-- [step3.quilt.s1.reference_panel_prepare.sh](./example/bin/step3.quilt.s1.reference_panel_prepare.sh)
-- [step3.quilt.s2.imputation.sh](./example/bin/step3.quilt.s2.imputation.sh)
+- [module3.quilt.s1.reference_panel_prepare.sh](./example/bin/module3.quilt.s1.reference_panel_prepare.sh)
+- [module3.quilt.s2.imputation.sh](./example/bin/module3.quilt.s2.imputation.sh)
 
 **Shell scripts for QUILT**
 
@@ -275,8 +276,8 @@ bcftools stats $true_set ${work_path}/imputed_file_merged/high_dep_100.chr20_imp
 
 ------------------------------------------
 ### Step 4: kinship estimation using PLINK (v2.00a3LM)
-- [step4.plink.kinship.s1.sh](./example/bin/step4.plink.kinship.s1.sh)
-- [step4.plink.kinship.s2.sh](./example/bin/step4.plink.kinship.s2.sh)
+- [module4.plink.kinship.s1.sh](./example/bin/module4.plink.kinship.s1.sh)
+- [module4.plink.kinship.s2.sh](./example/bin/module4.plink.kinship.s2.sh)
 
 
 **Step 1: Compute kinship with plink2**
@@ -292,8 +293,8 @@ $plink2 --vcf $imputed_vcf --king-cutoff-table 0.177 --out $kinship_outdir/$pref
 
 -------------------------------------------------------------------
 ### Step 5: Principal component analyses using PLINK (v2.00a3LM) or EMU (v.0.9)
-- [step5.emu.pca.sh](./example/bin/step5.emu.pca.sh)
-- [step5.plink.pca.sh](./example/bin/step5.plink.pca.sh)
+- [module5.emu.pca.sh](./example/bin/module5.emu.pca.sh)
+- [module5.plink.pca.sh](./example/bin/module5.plink.pca.sh)
 
 **Perform PCA with EMU**
 ```bash
@@ -308,8 +309,8 @@ $plink2 --maf 0.05 --vcf $imputed_vcf dosage=DS --pca 10 --out $imputed_vcf.pca1
 
 ---------------------------------------------------------
 ### Step 6: Genome-wide association studies by using PLINK (v2.00a3LM)
-- [step6.gwas.s1.sh](./example/bin/step6.gwas.s1.sh)
-- [step6.gwas.s2.sh](./example/bin/step6.gwas.s2.sh)
+- [module6.gwas.s1.sh](./example/bin/module6.gwas.s1.sh)
+- [module6.gwas.s2.sh](./example/bin/module6.gwas.s2.sh)
 
 ```bash
 script1=gwas/get.pheno.py
@@ -325,7 +326,7 @@ $python  $allpheno_table $allsample $pheno >$outdir/${pheno}_pheno.table
 
 #Step 2 conduct gwas with plink
 $plink2 --vcf $imputed_vcf dosage=DS --fam $fam  --covar $covariates --covar-variance-standardize --glm --out .plink --threads 2 --memory 10000 requir
-$python $script2 $vcflist $outdir $covar9 $pheno $phenotable $hweinfo linear > $outdir/$pheno/bin/step1.plink.work.sh
+$python $script2 $vcflist $outdir $covar9 $pheno $phenotable $hweinfo linear > $outdir/$pheno/bin/module1.plink.work.sh
 
 ```
 
