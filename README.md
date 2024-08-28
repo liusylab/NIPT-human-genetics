@@ -193,7 +193,7 @@ Module 3: Genotype imputation
 
 - Explanation of the analyses in this option:
 
-**Step1: Preparing the reference panel and chunks**
+**Step1: Preparing the reference panel and imputation chunks**
 - [module3.glimpse.s1.reference_panel_prepare.sh](./example/bin/module3.glimpse.s1.reference_panel_prepare.sh)
 
 After downloading the reference panel or computing our own reference panel using some phasing algorithms, the imputation algorithm we use requires normlization and the selection of only bi-allelic SNPs passing certain minor allele frequency threshold from all variants in the reference panel. In addition, prepare chunk files so as to allow glimpse to impute variants by chunks. This process can be accomplished using the following commands.
@@ -263,7 +263,7 @@ $bgzip ${work_path}/imputed_file_merged/high_dep_100.chr${i}_imputed.vcf
 $bcftools index -f ${work_path}/imputed_file_merged/high_dep_100.chr${i}_imputed.vcf.gz
 ```
 
-**Plugins: Calculating the accuracy (Optinal)**
+**Plugins: Calculating the accuracy (Optional)**
 
 If high-depth sequencing data is available from some NIPT samples, these high-depth genotypes can be used as the reference set. By comparing the imputed genotype dosage to the high-depth genotypes, we can assess imputation accuracy, specifically by calculating the squared Person correlation coefficient between the true genotypes and the imputed genotype dosages. The following `bcftools` commands can be used to compute imputation accuracy based on allele frequency bins.
 
@@ -279,7 +279,27 @@ $bcftools stats $true_set ${work_path}/imputed_file_merged/high_dep_100.chr20_im
 - Explanation of the analyses in this option:
 
 
-**Step1: **
+**Step1: Preparing the reference panel**
+- [module3.quilt.s1.reference_panel_prepare.sh](./example/bin/module3.quilt.s1.reference_panel_prepare.sh)
+
+Similar to GLIMPSE, the imputation algorithm of QUILT also involves selecting only bi-allelic SNPs that meet a specified minor allele frequency threshold from all variants in the reference panel. Additionally, QUILT requires the reference panel to be provided in the hap-legend-sample file format.
+
+```bash
+#Conduct normalization and filtration of the reference panel
+$bcftools norm -m -any ${reference_path}/$prefix.vcf.gz -Ou --threads 8 | $bcftools view -m 2 -M 2 -v snps -i 'MAF>0.001' --threads 8 -Oz -o $reference_path/$prefix.biallelic.snp.maf0.001.vcf.gz
+$bcftools index -f $reference_path/$prefix.biallelic.snp.maf0.001.vcf.gz
+zcat $reference_path/$prefix.biallelic.snp.maf0.001.vcf.gz | grep '^#'> $reference_path/$prefix.biallelic.snp.maf0.001.unique_pos.vcf && zcat $reference_path/$prefix.biallelic.snp.maf0.001.vcf.gz | awk '!/^#/ {print \$0}'|awk 'length(\$4)==1'|awk 'length(\$5)==1'| awk -F '\\t' '!a[\$2]++' >> $reference_path/$prefix.biallelic.snp.maf0.001.unique_pos.vcf
+$bgzip -f $reference_path/$prefix.biallelic.snp.maf0.001.unique_pos.vcf
+
+#Converting formats
+$bcftools convert --haplegendsample $reference_path/$prefix.biallelic.snp.maf0.001.unique_pos $reference_path/$prefix.biallelic.snp.maf0.001.unique_pos.vcf.gz
+sed -i 's/sample population group sex/SAMPLE POP GROUP SEX/g' $reference_path/$prefix.biallelic.snp.maf0.001.unique_pos.samples
+```
+
+**Step2: Conduct genotype imputation**
+- [module3.quilt.s2.imputation.sh](./example/bin/module3.quilt.s2.imputation.sh)
+
+Conduct the genotype imputation by chromosomes or by defined regions.
 
 ```bash
 /software/QUILT/QUILT.R \
@@ -300,43 +320,50 @@ $bcftools stats $true_set ${work_path}/imputed_file_merged/high_dep_100.chr20_im
 --save_prepared_reference=TRUE
 ```
 
-------------------------------------------
-### Step 4: kinship estimation using PLINK (v2.00a3LM)
+Module 4: kinship estimation using PLINK (v2.00a3LM)
+---------------
+- Bash script for module 4 are divided into two steps
 - [module4.plink.kinship.s1.sh](./example/bin/module4.plink.kinship.s1.sh)
 - [module4.plink.kinship.s2.sh](./example/bin/module4.plink.kinship.s2.sh)
 
 
 **Step 1: Compute kinship with plink2**
+- [module4.plink.kinship.s1.sh](./example/bin/module4.plink.kinship.s1.sh)
 ```bash
 $plink2 --vcf $imputed_vcf --make-king-table --out $kinship_outdir/$prefix --threads 24
 ```
 
 **Step 2: Exclude samples based on kinship**
+- [module4.plink.kinship.s2.sh](./example/bin/module4.plink.kinship.s2.sh)
 ```bash
 $plink2 --vcf $imputed_vcf --king-cutoff-table 0.177 --out $kinship_outdir/$prefix --threads 24
 ```
 
 
--------------------------------------------------------------------
-### Step 5: Principal component analyses using PLINK (v2.00a3LM) or EMU (v.0.9)
+Module 5: Principal component analyses using PLINK (v2.00a3LM) or EMU (v.0.9)
+------
+- Bash script for module 5 have two options
 - [module5.emu.pca.sh](./example/bin/module5.emu.pca.sh)
 - [module5.plink.pca.sh](./example/bin/module5.plink.pca.sh)
 
-**Perform PCA with EMU**
+**Option1: Perform PCA with EMU**
 ```bash
 $emu -m -p $imputed_vcf -e 10 -t 30 -o $imputed_vcf.emu10
 ```
 
 
-**Perform PCA with PLINK**
+**Option2: Perform PCA with PLINK**
 ```bash
 $plink2 --maf 0.05 --vcf $imputed_vcf dosage=DS --pca 10 --out $imputed_vcf.pca10 --threads 30
 ```
 
----------------------------------------------------------
-### Step 6: Genome-wide association studies by using PLINK (v2.00a3LM)
+Module 6: Genome-wide association studies by using PLINK (v2.00a3LM)
+-----
+- Bash script for module 6 have two options
 - [module6.gwas.s1.sh](./example/bin/module6.gwas.s1.sh)
 - [module6.gwas.s2.sh](./example/bin/module6.gwas.s2.sh)
+
+**Step 1: normalize phenotype
 
 ```bash
 script1=gwas/get.pheno.py
@@ -349,8 +376,11 @@ vcflist=$imputed_vcf.list
 covariates=example/data/covariates.txt
 
 $python  $allpheno_table $allsample $pheno >$outdir/${pheno}_pheno.table
+```
 
-#Step 2 conduct gwas with plink
+**Step2: conduct gwas with plink
+
+```bash
 $plink2 --vcf $imputed_vcf dosage=DS --fam $fam  --covar $covariates --covar-variance-standardize --glm --out .plink --threads 2 --memory 10000 requir
 $python $script2 $vcflist $outdir $covar9 $pheno $phenotable $hweinfo linear > $outdir/$pheno/bin/module1.plink.work.sh
 
