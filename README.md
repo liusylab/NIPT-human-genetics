@@ -54,7 +54,7 @@ Pre-requistes
 ### System requirements
 
 In order to use the set of tools included in NIPT-human-genetics, a modern Linux operating system is required, along with compatible versions of GCC and JAVA.
-The accompanying shell [example](https://github.com/liusylab/NIPT-human-genetics/tree/main/example) was executed using the SLURM workload manager on a Red Hat 8.4.1-1 system. However, the commands regarding working directory and the workload manager should be adapted for use according to the user's system settings.
+The accompanying shell [example](https://github.com/liusylab/NIPT-human-genetics/tree/main/example) was executed using the SLURM workload manager on a Red Hat 8.4.1-1 system. However, the commands regarding working directory, pathway for the required softwares, and the workload manager should be adapted for use according to the user's system and personal settings.
 
 Installation
 -----------
@@ -88,8 +88,8 @@ Module 1: Alignment and statistics
 
 
 **1. read alignment using bwa**
-We applied bwa single end alignment model for mapping the single-end reads (typically 35bp) to the latest human genome reference (GRCh). 
-We used samtools to sort the alignment reads, remove potential PCR duplicates and generate an index for the bam file.
+
+We used the BWA single-end alignment model to map the single-end reads (typically 35 bp) to the latest human genome reference (GRCh). The alignment reads were then sorted using Samtools, followed by the removal of potential PCR duplicates, and an index was generated for the BAM file.
 
 ```bash
 # set parameter
@@ -100,18 +100,19 @@ lane_id=$1
 sample_id=$2
 fq=$3
 
-bwa aln -e 10 -t 8 -i 5 -q 0 $hg38_index_prefix $fq > $outdir/${sample_id}.sai && \
-bwa samse -r "@RG\tID:${lane_id}\tPL:COMPLETE\tSM:${sample_id}" $hg38_index_prefix $outdir/${sample_id}.sai $fq | $samtools view -h -Sb - > $outdir/${sample_id}.bam && echo "** bwa done **" && \
-samtools sort -@ 8 -O bam -o $outdir/${sample_id}.sorted.bam $outdir/${sample_id}.bam && echo "** bam sorted done **" && \
-samtools rmdup $outdir/${sample_id}.sorted.bam $outdir/${sample_id}.sorted.rmdup.bam && echo "** rmdup done **" && \
-samtools index $outdir/${sample_id}.sorted.rmdup.bam
+$bwa aln -e 10 -t 8 -i 5 -q 0 $hg38_index_prefix $fq > $outdir/${sample_id}.sai && \
+$bwa samse -r "@RG\tID:${lane_id}\tPL:COMPLETE\tSM:${sample_id}" $hg38_index_prefix $outdir/${sample_id}.sai $fq | $samtools view -h -Sb - > $outdir/${sample_id}.bam && echo "** bwa done **" && \
+$samtools sort -@ 8 -O bam -o $outdir/${sample_id}.sorted.bam $outdir/${sample_id}.bam && echo "** bam sorted done **" && \
+$samtools rmdup $outdir/${sample_id}.sorted.bam $outdir/${sample_id}.sorted.rmdup.bam && echo "** rmdup done **" && \
+$samtools index $outdir/${sample_id}.sorted.rmdup.bam
 ```
 
 **2. re-alignment with GATK**
 
+We used GATK to realign indels in the NIPT reads based on known indel information from prior studies.
 
 ```bash
-java -Xmx15g -jar $gatk \
+$java -Xmx15g -jar $gatk \
     -T RealignerTargetCreator \
     -R $hg38 \
     -I $outdir/${sample_id}.sorted.rmdup.bam \
@@ -119,13 +120,15 @@ java -Xmx15g -jar $gatk \
     -known $gatk_bundle_dir/Homo_sapiens_assembly38.known_indels.vcf.gz \
     -o $outdir/${sample_id}.indel_target_intervals.list
 
-samtools index $outdir/${sample_id}.sorted.rmdup.realign.bam
+$samtools index $outdir/${sample_id}.sorted.rmdup.realign.bam
 ```
 
 **3. BQSR base quality score recalibration with GATK**
 
+Additionally, GATK was employed to recalibrate base quality in the NIPT reads, using known SNPs and indels as references.
+
 ```bash
-java -jar $gatk \
+$java -jar $gatk \
     -T BaseRecalibrator \
     -nct 8 \
     -R $hg38 \
@@ -135,7 +138,7 @@ java -jar $gatk \
     --knownSites $gatk_bundle_dir/Homo_sapiens_assembly38.known_indels.vcf.gz \
     -o $outdir/${sample_id}.recal_data.table
 
-java -jar $gatk \
+$java -jar $gatk \
     -T PrintReads \
     -nct 8 \
     -R $hg38 \
@@ -146,9 +149,11 @@ java -jar $gatk \
 
 **4. bam statistics with samtools and bedtools**
 
+We used Samtools and Bedtools to calculate alignment statistics for the alignment files.
+
 ```bash
-samtools stats $outdir/${sample_id}.sorted.rmdup.realign.BQSR.bam > $outdir/${sample_id}.sorted.rmdup.realign.BQSR.bamstats
-bedtools genomecov -ibam $outdir/${sample_id}.sorted.rmdup.realign.BQSR.bam -bga -split | bgzip > $outdir/${sample_id}.sorted.rmdup.realign.BQSR.cvg.bed.gz && tabix -p bed $outdir/${sample_id}.sorted.rmdup.realign.BQSR.cvg.bed.gz
+$samtools stats $outdir/${sample_id}.sorted.rmdup.realign.BQSR.bam > $outdir/${sample_id}.sorted.rmdup.realign.BQSR.bamstats
+$bedtools genomecov -ibam $outdir/${sample_id}.sorted.rmdup.realign.BQSR.bam -bga -split | bgzip > $outdir/${sample_id}.sorted.rmdup.realign.BQSR.cvg.bed.gz && tabix -p bed $outdir/${sample_id}.sorted.rmdup.realign.BQSR.cvg.bed.gz
 
 ```
 
