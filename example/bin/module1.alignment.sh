@@ -3,7 +3,7 @@ ref_index_prefix=/share/home/lsy_liusiyang/20220708_Alignment/hg38/Homo_sapiens_
 gatk_bundle_dir=/share/home/lsy_liusiyang/20220708_Alignment/hg38
 fqlist=/share/home/lsy_liusiyang/NIPT-human-genetics/example/data/fq.list
 
-workflow=/share/home/lsy_liusiyang/NIPT-human-genetics/bwa_alignment/alingment_workflow.sh
+workflow=../../../NIPT-human-genetics/bwa_alignment/alignment_workflow.sh
 bwa=/share/home/lsy_liusiyang/software/bwa-0.7.17/bwa
 samtools=/share/home/lsy_liusiyang/software/samtools-1.15.1/samtools
 gatk=/share/home/lsy_liusiyang/software/GenomeAnalysisTK-3.8-0-ge9d806836/GenomeAnalysisTK.jar

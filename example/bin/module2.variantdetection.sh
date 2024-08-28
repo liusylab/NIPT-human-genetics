@@ -1,5 +1,5 @@
-basevarpip=/share/home/lsy_liusiyang/NIPT-human-genetics/basevar/0.6.1.1/scripts/create_pipeline.py
-bamlist=/share/home/lsy_liusiyang/NIPT-human-genetics/example/outdir/batch1_final_files/bam.list
+basevarpip=../../../NIPT-human-genetics/basevar/0.6.1.1/scripts/create_pipeline.py
+bamlist=../../../NIPT-human-genetics/example/outdir/batch1_final_files/bam.list
 
 
 ref=/share/home/lsy_liusiyang/20220708_Alignment/hg38/Homo_sapiens_assembly38.fasta
