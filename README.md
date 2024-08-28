@@ -53,19 +53,21 @@ Pre-requistes
 
 ### System requirements
 
-In order to use the set of tools in NIPT-human-genetics, we require a modern Linux operating system, a version of GCC and JAVA.
-The enclosed shell [example](https://github.com/liusylab/NIPT-human-genetics/tree/main/example) were run with SLURM workload manager in a Red Hat 8.4.1-1 system. Commands can be adapted to other workload manager and Linux systems.
+In order to use the set of tools included in NIPT-human-genetics, a modern Linux operating system is required, along with compatible versions of GCC and JAVA.
+The accompanying shell [example](https://github.com/liusylab/NIPT-human-genetics/tree/main/example) was executed using the SLURM workload manager on a Red Hat 8.4.1-1 system. However, the commands regarding working directory and the workload manager should be adapted for use according to the user's system settings.
 
-### Installation
+Installation
 -----------
 ```bash
 $ git clone https://github.com/liusylab/NIPT-human-genetics.git
-$ cd NIPT-human-genetics
+or
+$ git clone git@github.com:liusylab/NIPT-human-genetics.git
 ```
 
-### Quick Start
+Quick Start
 -----------
-Command line users can refer to this example [example](https://github.com/liusylab/NIPT-human-genetics/tree/main/example) for quick start
+Users can refer to this example [example](https://github.com/liusylab/NIPT-human-genetics/tree/main/example) for quick start, where we analyze 10 simulated NIPT samples with sequencing depth of around 0.08 to 0.1 fold.
+The input data used in this example (2.1G) exceeds the storage capacity available on GitHub, but you can download it from [zenodo](<10.5281/zenodo.13329720>) and place it in "example/data" if you wish to try the example byself. Alternatively, you can begin analyzing your own NIPT data using the workflow modules provided in the example/bin directory.
 
 ---------------------------------------------------------------------------------------
 
@@ -77,14 +79,17 @@ $ [step1.basevar.simulation.sh](./basevar_simulation/step1.basevar.simulation.sh
 $ sh step1.basevar.simulation.sh
 ```
 
----------------------------------------------------------------------------------------
 
-### Step 1: Alignment and statistics
+Module 1: Alignment and statistics
+-----------
 
-- [step1.alignment.sh](./example/bin/step1.alignment.sh)
+- Bash shell for this module [step1.alignment.sh](./example/bin/step1.alignment.sh)
+- Below is an explanation for analyses in this module 
 
 
-**1. shell script for bwa alignment**
+**1. read alignment using bwa**
+We applied bwa single end alignment model for mapping the single-end reads (typically 35bp) to the latest human genome reference (GRCh). 
+We used samtools to sort the alignment reads, remove potential PCR duplicates and generate an index for the bam file.
 
 ```bash
 # set parameter
@@ -103,6 +108,7 @@ samtools index $outdir/${sample_id}.sorted.rmdup.bam
 ```
 
 **2. re-alignment with GATK**
+
 
 ```bash
 java -Xmx15g -jar $gatk \
