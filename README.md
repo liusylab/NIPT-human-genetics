@@ -9,7 +9,16 @@
 ### Introduction
 ------------
 
-NIPT-human-genetics is a workflow for analysing large-scale NIPT sequencing data for human genetic investigation such as SNP detection, allele frequency estimation, individual genotype imputation, kinship estimation, population structure inference and genome-wide association studies.
+**NIPT-human-genetics** is a **semi-automated** workflow for analysing large-scale ultra-low-pass non-invasive prenatal test (NIPT) sequencing data for human genetic investigation such as SNP detection, allele frequency estimation, individual genotype imputation, kinship estimation, population structure inference and genome-wide association studies. It has been used in the following studies [Liu et al]:<https://doi.org/10.1016/j.cell.2018.08.016>, [Yang et al]:<https://doi.org/10.1182/blood.2023021925>,. The word **semi-automated** means it cannot excute jobs and users need to submit the jobs by themselves, following to their computational systems settings.
+
+**NIPT-human-genetics** contains the following modules
+- Alignment and statistics of NIPT sequencing data
+- SNP discovery and allele frequency estimation using a maximum likelihood model implemented in BASEVAR
+- Genotype imputation using hidden markov model implemented by GLIMPSE or QUILT
+- Kinship estimation
+- Principal component analysis 
+
+
 
 
 ### Citation
@@ -78,7 +87,6 @@ $ sh step1.basevar.simulation.sh
 
 ```bash
 # set parameter
-
 hg38=Homo_sapiens_assembly38.fasta
 hg38_index_prefix=Homo_sapiens_assembly38.fasta.gz
 gatk_bundle_dir=hg38_gatk_bundle/hg38
@@ -291,11 +299,11 @@ allsample=./database/pheno.table
 vcflist=$imputed_vcf.list
 covariates=example/data/covariates.txt
 
-#Step1 clean and normalize phenotypes using inverse rank transformation (quantile transformation)
 $python  $allpheno_table $allsample $pheno >$outdir/${pheno}_pheno.table
 
-#Step 2 generate plink shell
-python $script2 $vcflist $outdir/$pheno/output/plink/ $covar9 $pheno $phenotable $hweinfo linear > $outdir/$pheno/bin/step1.plink.work.sh
+#Step 2 conduct gwas with plink
+$plink2 --vcf $imputed_vcf dosage=DS --fam $fam  --covar $covariates --covar-variance-standardize --glm --out .plink --threads 2 --memory 10000 requir
+$python $script2 $vcflist $outdir $covar9 $pheno $phenotable $hweinfo linear > $outdir/$pheno/bin/step1.plink.work.sh
 
 ```
 
