@@ -58,7 +58,7 @@ The accompanying shell [example](https://github.com/liusylab/NIPT-human-genetics
 
 
 Installation
------------
+------------
 
 ```bash
 $ git clone https://github.com/liusylab/NIPT-human-genetics.git
@@ -78,7 +78,7 @@ The input data used in this example (2.1G) exceeds the storage capacity availabl
 
 
 Module 1: Alignment and statistics
------------
+----------------------------------
 
 **Bash script for this module [module1.alignment.sh](./example/bin/module1.alignment.sh)**
 
@@ -155,7 +155,7 @@ $bedtools genomecov -ibam $outdir/${sample_id}.sorted.rmdup.realign.BQSR.bam -bg
 ```
 
 Module 2: SNP detection and allele frequency estimation with BaseVar
----------------------------------------------------------------------------------------
+--------------------------------------------------------------------
 
 **Bash script for this module [module2_basevar.sh](./example/bin/module2.basevar.sh)**
 
@@ -191,15 +191,18 @@ $ sh plugin.basevar.simulation.sh
 
 
 Module 3: Genotype imputation
-------------
+-----------------------------
 
 ### Option 1: Genotype imputation using GLIMPSE (version 1.1.1)
-- Bash script for this option are divided into five steps
+
+**Bash script for this option are divided into five steps:**
+
 - [module3.glimpse.s1.reference_panel_prepare.sh](./example/bin/module3.glimpse.s1.reference_panel_prepare.sh)
 - [module3.glimpse.s2.computeGLs.sh](./example/bin/module3.glimpse.s2.computeGLs.sh)
 - [module3.glimpse.s3.mergeGLs.sh](./example/bin/module3.glimpse.s3.mergeGLs.sh)
 - [module3.glimpse.s4.phase.sh](./example/bin/module3.glimpse.s4.phase.sh)
 - [module3.glimpse.s5.ligate.sh](./example/bin/module3.glimpse.s5.ligate.sh)
+
 
 - Explanation of the analyses in this option:
 
@@ -207,7 +210,7 @@ Module 3: Genotype imputation
 
 After downloading the reference panel or computing our own reference panel using some phasing algorithms, the imputation algorithm we use requires normlization and the selection of only bi-allelic SNPs passing certain minor allele frequency threshold from all variants in the reference panel. In addition, prepare chunk files so as to allow glimpse to impute variants by chunks. This process can be accomplished using the following commands.
 
-- [module3.glimpse.s1.reference_panel_prepare.sh](./example/bin/module3.glimpse.s1.reference_panel_prepare.sh)
+- Shell scripts: [module3.glimpse.s1.reference_panel_prepare.sh](./example/bin/module3.glimpse.s1.reference_panel_prepare.sh)
 
 ```bash
 ## download 1KGP reference panel
@@ -231,7 +234,7 @@ $GLIMPSE_chunk --input ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.00
 
 In this step, BCFtools is used to compute genotype likelihood. The jobs are processed in parallel based on chromosomes or regions, depending on the available computational resources.
 
-- [module3.glimpse.s2.computeGLs.sh](./example/bin/module3.glimpse.s2.computeGLs.sh)
+- Shell scripts: [module3.glimpse.s2.computeGLs.sh](./example/bin/module3.glimpse.s2.computeGLs.sh)
 
 ```bash
 VCF=${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.sites.vcf.gz
@@ -245,7 +248,7 @@ $bcftools index -f ${work_path}/GL_file/${name}.chr${i}.vcf.gz
 
 Merge the genotype likelihood files and generate chunks to facilitate phasing and genotype imputation.
 
-- [module3.glimpse.s3.mergeGLs.sh](./example/bin/module3.glimpse.s3.mergeGLs.sh)
+- Shell scripts: [module3.glimpse.s3.mergeGLs.sh](./example/bin/module3.glimpse.s3.mergeGLs.sh)
 
 ```bash
 ls ${work_path}/GL_file/*.chr${i}.vcf.gz > ${work_path}/GL_file/high_dep_100.chr${i}_GL_list.txt
@@ -257,7 +260,7 @@ $bcftools index -f ${work_path}/GL_file_merged/high_dep_100.chr${i}.vcf.gz
 
 Phase the variants using a hidden Markov model based on genotype likelihood information, paralleling the tasks by chunks defined in Step 1. 
 
-- [module3.glimpse.s4.phase.sh](./example/bin/module3.glimpse.s4.phase.sh)
+- Shell scripts: [module3.glimpse.s4.phase.sh](./example/bin/module3.glimpse.s4.phase.sh)
 
 ```bash
 $GLIMPSE_phase --input ${VCF} --reference ${REF} --map ${MAP} --input-region ${IRG} --output-region ${ORG} --output ${OUT}
@@ -269,7 +272,7 @@ $bcftools index -f ${OUT}.gz
 
 Merge the imputation results from the chunks.
 
-- [module3.glimpse.s5.ligate.sh](./example/bin/module3.glimpse.s5.ligate.sh)
+- Shell scripts: [module3.glimpse.s5.ligate.sh](./example/bin/module3.glimpse.s5.ligate.sh)
 
 ```bash
 ls ${work_path}/imputed_file/high_dep_100.chr${i}.*.imputed.vcf.gz > ${work_path}/imputed_file/high_dep_100.chr${i}_imputed_list.txt
@@ -290,14 +293,12 @@ $bcftools stats $true_set ${work_path}/imputed_file_merged/high_dep_100.chr20_im
 
 Bash script for this option are divided into two steps:
 
-- [module3.quilt.s1.reference_panel_prepare.sh](./example/bin/module3.quilt.s1.reference_panel_prepare.sh)
-- [module3.quilt.s2.imputation.sh](./example/bin/module3.quilt.s2.imputation.sh)
+- Step1: [module3.quilt.s1.reference_panel_prepare.sh](./example/bin/module3.quilt.s1.reference_panel_prepare.sh)
+- Step2: [module3.quilt.s2.imputation.sh](./example/bin/module3.quilt.s2.imputation.sh)
 
 **Explanation of the analyses in this option**:
 
 **Step1: Preparing the reference panel**
-
-[module3.quilt.s1.reference_panel_prepare.sh](./example/bin/module3.quilt.s1.reference_panel_prepare.sh)
 
 Similar to GLIMPSE, the imputation algorithm of QUILT also involves selecting only bi-allelic SNPs that meet a specified minor allele frequency threshold from all variants in the reference panel. Additionally, QUILT requires the reference panel to be provided in the hap-legend-sample file format.
 
@@ -314,8 +315,6 @@ sed -i 's/sample population group sex/SAMPLE POP GROUP SEX/g' $reference_path/$p
 ```
 
 **Step2: Conduct genotype imputation**
-
-[module3.quilt.s2.imputation.sh](./example/bin/module3.quilt.s2.imputation.sh)
 
 Conduct the genotype imputation by chromosomes or by defined regions.
 
@@ -339,25 +338,21 @@ Conduct the genotype imputation by chromosomes or by defined regions.
 ```
 
 Module 4: kinship estimation using PLINK (v2.00a3LM)
----------------
+----------------------------------------------------
 
 **Bash script for module 4 are divided into two steps:**
 
-- [module4.plink.kinship.s1.sh](./example/bin/module4.plink.kinship.s1.sh)
-- [module4.plink.kinship.s2.sh](./example/bin/module4.plink.kinship.s2.sh)
+- Step1: [module4.plink.kinship.s1.sh](./example/bin/module4.plink.kinship.s1.sh)
+- Step2: [module4.plink.kinship.s2.sh](./example/bin/module4.plink.kinship.s2.sh)
 
 
 **Step 1: Compute kinship with plink2**
-
-[module4.plink.kinship.s1.sh](./example/bin/module4.plink.kinship.s1.sh)
 
 ```bash
 $plink2 --vcf $imputed_vcf --make-king-table --out $kinship_outdir/$prefix --threads 24
 ```
 
 **Step 2: Exclude samples based on kinship**
-
-[module4.plink.kinship.s2.sh](./example/bin/module4.plink.kinship.s2.sh)
 
 ```bash
 $plink2 --vcf $imputed_vcf --king-cutoff-table 0.177 --out $kinship_outdir/$prefix --threads 24
@@ -369,8 +364,8 @@ Module 5: Principal component analyses using PLINK (v2.00a3LM) or EMU (v.0.9)
 
 **Bash script for module 5 have two options:**
 
-- [module5.emu.pca.sh](./example/bin/module5.emu.pca.sh)
-- [module5.plink.pca.sh](./example/bin/module5.plink.pca.sh)
+- Step1: [module5.emu.pca.sh](./example/bin/module5.emu.pca.sh)
+- Step2: [module5.plink.pca.sh](./example/bin/module5.plink.pca.sh)
 
 
 **Option1: Perform PCA with EMU**
@@ -390,8 +385,8 @@ Module 6: Genome-wide association studies by using PLINK (v2.00a3LM)
 
 **Bash script for module 6 have two options:**
 
-- [module6.gwas.s1.sh](./example/bin/module6.gwas.s1.sh)
-- [module6.gwas.s2.sh](./example/bin/module6.gwas.s2.sh)
+- Step1: [module6.gwas.s1.sh](./example/bin/module6.gwas.s1.sh)
+- Step2: [module6.gwas.s2.sh](./example/bin/module6.gwas.s2.sh)
 
 **Step 1: normalize phenotype**
 
