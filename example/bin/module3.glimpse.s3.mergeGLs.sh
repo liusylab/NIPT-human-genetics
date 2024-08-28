@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+
 bcftools=/share/home/lsy_liusiyang/software/bcftools-1.15/bcftools
 
 glimpse_outdir=/share/home/lsy_liusiyang/NIPT-human-genetics/example/outdir/glimpse_output

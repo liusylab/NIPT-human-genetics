@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+
 reference_path=/share/home/lsy_liuyanhong/20230511_QUILT/quilt_110_1KGP/input/1KGP_legend_haplotype
 
 GLIMPSE_ligate=/share/home/lsy_liusiyang/software/GLIMPSE-1.1.1/ligate/bin/GLIMPSE_ligate

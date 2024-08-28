@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+
 bcftools=/share/home/lsy_liusiyang/software/bcftools-1.15/bcftools
 bgzip=/share/home/lsy_liusiyang/software/tabix-0.2.6/bgzip
 tabix=/share/home/lsy_liusiyang/software/tabix-0.2.6/tabix

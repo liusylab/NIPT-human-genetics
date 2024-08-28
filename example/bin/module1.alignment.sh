@@ -1,3 +1,5 @@
+#!/bin/bash
+
 ref=/share/home/lsy_liusiyang/20220708_Alignment/hg38/Homo_sapiens_assembly38.fasta
 ref_index_prefix=/share/home/lsy_liusiyang/20220708_Alignment/hg38/Homo_sapiens_assembly38.fasta
 gatk_bundle_dir=/share/home/lsy_liusiyang/20220708_Alignment/hg38

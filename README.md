@@ -44,42 +44,50 @@ Pre-requistes
 - [PLINK](https://www.cog-genomics.org/plink/2.0/): <https://www.cog-genomics.org/plink/2.0/>
 - [EMU](https://github.com/Rosemeis/emu): <https://github.com/Rosemeis/emu> (optional)
 
-### Download reference datasets
+### Download human reference datasets
 
-- [Human genome reference]<ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz>: ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz
-
-- [GATK bundle]<https://gatk.broadinstitute.org/hc/en-us/articles/360035890811-Resource-bundle>: https://gatk.broadinstitute.org/hc/en-us/articles/360035890811-Resource-bundle
+- **Human genome reference**: <ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz>
+- **GATK bundle**: <https://gatk.broadinstitute.org/hc/en-us/articles/360035890811-Resource-bundle>
 
 
 ### System requirements
 
-In order to use the set of tools included in NIPT-human-genetics, a modern Linux operating system is required, along with compatible versions of GCC and JAVA.
-The accompanying shell [example](https://github.com/liusylab/NIPT-human-genetics/tree/main/example) was executed using the SLURM workload manager on a Red Hat 8.4.1-1 system. However, the commands regarding working directory, pathway for the required softwares, and the workload manager should be adapted for use according to the user's system and personal settings.
+In order to use the set of tools included in **NIPT-human-genetics**, a modern Linux operating system is required, along with compatible versions of GCC and JAVA.
+
+The accompanying shell [example](https://github.com/liusylab/NIPT-human-genetics/tree/main/example) was executed using the SLURM workload manager on a *Red Hat 8.4.1-1 system*. However, the commands regarding working directory, pathway for the required softwares, and the workload manager should be adapted for use according to the user's system and personal settings.
+
 
 Installation
 -----------
+
 ```bash
 $ git clone https://github.com/liusylab/NIPT-human-genetics.git
+```
+
 or
+
+```bash
 $ git clone git@github.com:liusylab/NIPT-human-genetics.git
 ```
+
 
 Quick Start
 -----------
 Users can refer to this example [example](https://github.com/liusylab/NIPT-human-genetics/tree/main/example) for quick start, where we analyze 10 simulated NIPT samples with sequencing depth of around 0.08 to 0.1 fold.
-The input data used in this example (2.1G) exceeds the storage capacity available on GitHub, but you can download it from [zenodo](<10.5281/zenodo.13329720>) and place it in "example/data" if you wish to try the example byself. Alternatively, you can begin analyzing your own NIPT data using the workflow modules provided in the example/bin directory.
+The input data used in this example (2.1G) exceeds the storage capacity available on GitHub, but you can download it from [zenodo](https://zenodo.org/records/13329720) and place it in `example/data` if you wish to try the example byself. Alternatively, you can begin analyzing your own NIPT data using the workflow modules provided in the `example/bin` directory.
 
 
 Module 1: Alignment and statistics
 -----------
 
-- Bash script for this module [module1.alignment.sh](./example/bin/module1.alignment.sh)
-- Below is an explanation of the analyses in this module 
+**Bash script for this module [module1.alignment.sh](./example/bin/module1.alignment.sh)**
+
+Below is an explanation of the analyses in this module:
 
 
 **1. read alignment using bwa**
 
-We used the BWA single-end alignment model to map the single-end reads (typically 35 bp) to the latest human genome reference (GRCh). The alignment reads were then sorted using Samtools, followed by the removal of potential PCR duplicates, and an index was generated for the BAM file.
+We used the BWA single-end alignment model to map the single-end reads (typically 35 bp) to the latest human genome reference. The alignment reads were then sorted using Samtools, followed by the removal of potential PCR duplicates, and an index was generated for the BAM file.
 
 ```bash
 # set parameter
@@ -148,8 +156,10 @@ $bedtools genomecov -ibam $outdir/${sample_id}.sorted.rmdup.realign.BQSR.bam -bg
 
 Module 2: SNP detection and allele frequency estimation with BaseVar
 ---------------------------------------------------------------------------------------
-- Bash script for this module [module2_basevar.sh](./example/bin/module2.basevar.sh)
-- Explanation of the analyses in this module:
+
+**Bash script for this module [module2_basevar.sh](./example/bin/module2.basevar.sh)**
+
+Explanation of the analyses in this module:
 
 In Module 2, we begin conducting some analyses in parallel. In the example, we process the data and perform variant detection and allele frequency estimation in 1 million basepair non-overlapping windows. To facilitate this parallelization, we use the pipeline generator **create_pipeline.py**, which distributes the computational tasks based on the --delta parameter across a specific chromosome defined by the -c parameter.
 
@@ -170,7 +180,7 @@ $basevar basetype -R $hg38 \
     --nCPU 4
 ```
 
-**Plugins: Simulation experiments for assessing the performance of BaseVar (optional)
+>**Plugins**: Simulation experiments for assessing the performance of BaseVar (optional)
 
 The following bash script is available for evaluating the performance of Basevar based on computational simulations: [plugin.basevar.simulation.sh](<./basevar_simulation/plugin.basevar.simulation.sh>)
 
@@ -194,9 +204,10 @@ Module 3: Genotype imputation
 - Explanation of the analyses in this option:
 
 **Step1: Preparing the reference panel and imputation chunks**
-- [module3.glimpse.s1.reference_panel_prepare.sh](./example/bin/module3.glimpse.s1.reference_panel_prepare.sh)
 
 After downloading the reference panel or computing our own reference panel using some phasing algorithms, the imputation algorithm we use requires normlization and the selection of only bi-allelic SNPs passing certain minor allele frequency threshold from all variants in the reference panel. In addition, prepare chunk files so as to allow glimpse to impute variants by chunks. This process can be accomplished using the following commands.
+
+- [module3.glimpse.s1.reference_panel_prepare.sh](./example/bin/module3.glimpse.s1.reference_panel_prepare.sh)
 
 ```bash
 ## download 1KGP reference panel
@@ -217,9 +228,10 @@ $GLIMPSE_chunk --input ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.00
 ```
 
 **Step2: Computing Genotype Likelihoods**
-- [module3.glimpse.s2.computeGLs.sh](./example/bin/module3.glimpse.s2.computeGLs.sh)
 
 In this step, BCFtools is used to compute genotype likelihood. The jobs are processed in parallel based on chromosomes or regions, depending on the available computational resources.
+
+- [module3.glimpse.s2.computeGLs.sh](./example/bin/module3.glimpse.s2.computeGLs.sh)
 
 ```bash
 VCF=${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.sites.vcf.gz
@@ -230,9 +242,10 @@ $bcftools index -f ${work_path}/GL_file/${name}.chr${i}.vcf.gz
 ```
 
 **Step3: Merge the genotype likelihood**
-- [module3.glimpse.s3.mergeGLs.sh](./example/bin/module3.glimpse.s3.mergeGLs.sh)
 
 Merge the genotype likelihood files and generate chunks to facilitate phasing and genotype imputation.
+
+- [module3.glimpse.s3.mergeGLs.sh](./example/bin/module3.glimpse.s3.mergeGLs.sh)
 
 ```bash
 ls ${work_path}/GL_file/*.chr${i}.vcf.gz > ${work_path}/GL_file/high_dep_100.chr${i}_GL_list.txt
@@ -241,9 +254,10 @@ $bcftools index -f ${work_path}/GL_file_merged/high_dep_100.chr${i}.vcf.gz
 ```
 
 **Step4: Phasing by GLIMPSE**
-- [module3.glimpse.s4.phase.sh](./example/bin/module3.glimpse.s4.phase.sh)
 
 Phase the variants using a hidden Markov model based on genotype likelihood information, paralleling the tasks by chunks defined in Step 1. 
+
+- [module3.glimpse.s4.phase.sh](./example/bin/module3.glimpse.s4.phase.sh)
 
 ```bash
 $GLIMPSE_phase --input ${VCF} --reference ${REF} --map ${MAP} --input-region ${IRG} --output-region ${ORG} --output ${OUT}
@@ -252,9 +266,10 @@ $bcftools index -f ${OUT}.gz
 ```
 
 **Step5: Ligate**
-- [module3.glimpse.s5.ligate.sh](./example/bin/module3.glimpse.s5.ligate.sh)
 
 Merge the imputation results from the chunks.
+
+- [module3.glimpse.s5.ligate.sh](./example/bin/module3.glimpse.s5.ligate.sh)
 
 ```bash
 ls ${work_path}/imputed_file/high_dep_100.chr${i}.*.imputed.vcf.gz > ${work_path}/imputed_file/high_dep_100.chr${i}_imputed_list.txt
@@ -263,7 +278,7 @@ $bgzip ${work_path}/imputed_file_merged/high_dep_100.chr${i}_imputed.vcf
 $bcftools index -f ${work_path}/imputed_file_merged/high_dep_100.chr${i}_imputed.vcf.gz
 ```
 
-**Plugins: Calculating the accuracy (Optional)**
+**Plugins**: Calculating the accuracy (Optional)
 
 If high-depth sequencing data is available from some NIPT samples, these high-depth genotypes can be used as the reference set. By comparing the imputed genotype dosage to the high-depth genotypes, we can assess imputation accuracy, specifically by calculating the squared Person correlation coefficient between the true genotypes and the imputed genotype dosages. The following `bcftools` commands can be used to compute imputation accuracy based on allele frequency bins.
 
@@ -272,15 +287,17 @@ $bcftools stats $true_set ${work_path}/imputed_file_merged/high_dep_100.chr20_im
 ```
 
 ### Option 2: Genotype imputation using QUILT (version 1.0.4)
-- Bash script for this option are divided into two steps
+
+Bash script for this option are divided into two steps:
+
 - [module3.quilt.s1.reference_panel_prepare.sh](./example/bin/module3.quilt.s1.reference_panel_prepare.sh)
 - [module3.quilt.s2.imputation.sh](./example/bin/module3.quilt.s2.imputation.sh)
 
-- Explanation of the analyses in this option:
-
+**Explanation of the analyses in this option**:
 
 **Step1: Preparing the reference panel**
-- [module3.quilt.s1.reference_panel_prepare.sh](./example/bin/module3.quilt.s1.reference_panel_prepare.sh)
+
+[module3.quilt.s1.reference_panel_prepare.sh](./example/bin/module3.quilt.s1.reference_panel_prepare.sh)
 
 Similar to GLIMPSE, the imputation algorithm of QUILT also involves selecting only bi-allelic SNPs that meet a specified minor allele frequency threshold from all variants in the reference panel. Additionally, QUILT requires the reference panel to be provided in the hap-legend-sample file format.
 
@@ -297,7 +314,8 @@ sed -i 's/sample population group sex/SAMPLE POP GROUP SEX/g' $reference_path/$p
 ```
 
 **Step2: Conduct genotype imputation**
-- [module3.quilt.s2.imputation.sh](./example/bin/module3.quilt.s2.imputation.sh)
+
+[module3.quilt.s2.imputation.sh](./example/bin/module3.quilt.s2.imputation.sh)
 
 Conduct the genotype imputation by chromosomes or by defined regions.
 
@@ -322,55 +340,65 @@ Conduct the genotype imputation by chromosomes or by defined regions.
 
 Module 4: kinship estimation using PLINK (v2.00a3LM)
 ---------------
-- Bash script for module 4 are divided into two steps
+
+**Bash script for module 4 are divided into two steps:**
+
 - [module4.plink.kinship.s1.sh](./example/bin/module4.plink.kinship.s1.sh)
 - [module4.plink.kinship.s2.sh](./example/bin/module4.plink.kinship.s2.sh)
 
 
 **Step 1: Compute kinship with plink2**
-- [module4.plink.kinship.s1.sh](./example/bin/module4.plink.kinship.s1.sh)
+
+[module4.plink.kinship.s1.sh](./example/bin/module4.plink.kinship.s1.sh)
+
 ```bash
 $plink2 --vcf $imputed_vcf --make-king-table --out $kinship_outdir/$prefix --threads 24
 ```
 
 **Step 2: Exclude samples based on kinship**
-- [module4.plink.kinship.s2.sh](./example/bin/module4.plink.kinship.s2.sh)
+
+[module4.plink.kinship.s2.sh](./example/bin/module4.plink.kinship.s2.sh)
+
 ```bash
 $plink2 --vcf $imputed_vcf --king-cutoff-table 0.177 --out $kinship_outdir/$prefix --threads 24
 ```
 
 
 Module 5: Principal component analyses using PLINK (v2.00a3LM) or EMU (v.0.9)
-------
-- Bash script for module 5 have two options
+-----------------------------------------------------------------------------
+
+**Bash script for module 5 have two options:**
+
 - [module5.emu.pca.sh](./example/bin/module5.emu.pca.sh)
 - [module5.plink.pca.sh](./example/bin/module5.plink.pca.sh)
 
+
 **Option1: Perform PCA with EMU**
+
 ```bash
 $emu -m -p $imputed_vcf -e 10 -t 30 -o $imputed_vcf.emu10
 ```
 
-
 **Option2: Perform PCA with PLINK**
+
 ```bash
 $plink2 --maf 0.05 --vcf $imputed_vcf dosage=DS --pca 10 --out $imputed_vcf.pca10 --threads 30
 ```
 
 Module 6: Genome-wide association studies by using PLINK (v2.00a3LM)
------
-- Bash script for module 6 have two options
+--------------------------------------------------------------------
+
+**Bash script for module 6 have two options:**
+
 - [module6.gwas.s1.sh](./example/bin/module6.gwas.s1.sh)
 - [module6.gwas.s2.sh](./example/bin/module6.gwas.s2.sh)
 
-**Step 1: normalize phenotype
+**Step 1: normalize phenotype**
 
 ```bash
 script1=gwas/get.pheno.py
 script2=gwas/generate_plink_tasks.py
-
 allpheno_table=example/data/phenotype.txt  
-
 allsample=./database/pheno.table
 vcflist=$imputed_vcf.list
 covariates=example/data/covariates.txt
@@ -378,12 +406,13 @@ covariates=example/data/covariates.txt
 $python  $allpheno_table $allsample $pheno >$outdir/${pheno}_pheno.table
 ```
 
-**Step2: conduct gwas with plink
+**Step2: conduct gwas with plink**
 
 ```bash
 $plink2 --vcf $imputed_vcf dosage=DS --fam $fam  --covar $covariates --covar-variance-standardize --glm --out .plink --threads 2 --memory 10000 requir
 $python $script2 $vcflist $outdir $covar9 $pheno $phenotable $hweinfo linear > $outdir/$pheno/bin/module1.plink.work.sh
 
 ```
+
 
 

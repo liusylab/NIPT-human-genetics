@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+
 bgzip=/share/home/lsy_liusiyang/software/tabix-0.2.6/bgzip
 bcftools=/share/home/lsy_liusiyang/software/bcftools-1.15/bcftools
 GLIMPSE_phase=/share/home/lsy_liusiyang/software/GLIMPSE-1.1.1/phase/bin/GLIMPSE_phase

@@ -1,3 +1,5 @@
+#!/bin/bash
+
 basevarpip=../../../NIPT-human-genetics/basevar/0.6.1.1/scripts/create_pipeline.py
 bamlist=../../../NIPT-human-genetics/example/outdir/batch1_final_files/bam.list
 

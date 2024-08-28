@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 ref=/share/home/lsy_liusiyang/20220708_Alignment/hg38/Homo_sapiens_assembly38.fasta
 bamlist=/share/home/lsy_liusiyang/NIPT-human-genetics/example/outdir/batch1_final_files/bam.list
 
