@@ -83,8 +83,8 @@ $ sh step1.basevar.simulation.sh
 Module 1: Alignment and statistics
 -----------
 
-- Bash shell for this module [step1.alignment.sh](./example/bin/step1.alignment.sh)
-- Below is an explanation for analyses in this module 
+- Bash script for this module [step1.alignment.sh](./example/bin/step1.alignment.sh)
+- Below is an explanation of the analyses in this module 
 
 
 **1. read alignment using bwa**
@@ -157,14 +157,24 @@ $bedtools genomecov -ibam $outdir/${sample_id}.sorted.rmdup.realign.BQSR.bam -bg
 
 ```
 
+Module 2: SNP detection and allele frequency estimation with BaseVar
 ---------------------------------------------------------------------------------------
-### Step 2: Maximum likelihood model for SNP discovery and allele frequency estimation with BaseVar
-- [step2_basevar.sh](./example/bin/step2.basevar.sh)
+- Bash script for this module [step2_basevar.sh](./example/bin/step2.basevar.sh)
+- Explanation of the analyses in this module:
+
+In Module 2, we begin conducting some analyses in parallel. In the example, we process the data and perform variant detection and allele frequency estimation in 1 million basepair non-overlapping windows. To facilitate this parallelization, we use the pipeline generator **create_pipeline.py**, which distributes the computational tasks based on the --delta parameter across a specific chromosome defined by the -c parameter.
 
 ```bash
-basevar basetype -R $hg38 \
+$python create_pipeline.py. -R $ref --ref_fai $ref_fai -c chr20 --delta 1000000 --nCPU 10 -b $bgzip -t $tabix -L $bamlist -o $outdir >> basevar.tmp.sh
+```
+
+Within BaseVar, maximum likelihood and likelihood ratio models are employed to determine the polymorphism of a genomic position and estimate the allele frequencies. Detailed matematical documentation can be found [here](https://www.biorxiv.org/content/10.1101/2023.12.11.570976v1). The latest version of BaseVar is available for download via this [link](<https://github.com/ShujiaHuang/basevar>). To review each of the parameters, you can use `basevar basetype -h`.
+
+```bash
+$basevar basetype -R $hg38 \
     --regions chr11:5246595-5248428,chr17:41197764-41276135 \
-    --batch-count 50 \
+    --batch-count 10 \
+    -m 0.001 \
     -L bamfile.list \
     --output-vcf test.vcf.gz \
     --output-cvg test.cvg.tsv.gz \
