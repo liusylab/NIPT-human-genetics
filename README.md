@@ -204,7 +204,7 @@ Module 3: Genotype imputation
 - [module3.glimpse.s5.ligate.sh](./example/bin/module3.glimpse.s5.ligate.sh)
 
 
-- Explanation of the analyses in this option:
+**Explanation of the analyses in this option:**
 
 **Step1: Preparing the reference panel and imputation chunks**
 
@@ -291,7 +291,7 @@ $bcftools stats $true_set ${work_path}/imputed_file_merged/high_dep_100.chr20_im
 
 ### Option 2: Genotype imputation using QUILT (version 1.0.4)
 
-Bash script for this option are divided into two steps:
+**Bash script for this option are divided into two steps:**
 
 - Step1: [module3.quilt.s1.reference_panel_prepare.sh](./example/bin/module3.quilt.s1.reference_panel_prepare.sh)
 - Step2: [module3.quilt.s2.imputation.sh](./example/bin/module3.quilt.s2.imputation.sh)
