@@ -46,9 +46,9 @@ Pre-requistes
 
 ### Download reference datasets
 
-- [Human genome reference](ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz): <ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz>
+- [Human genome reference]<ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz>: ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz
 
-- [GATK bundle](https://gatk.broadinstitute.org/hc/en-us/articles/360035890811-Resource-bundle): <https://gatk.broadinstitute.org/hc/en-us/articles/360035890811-Resource-bundle> 
+- [GATK bundle]<https://gatk.broadinstitute.org/hc/en-us/articles/360035890811-Resource-bundle>: https://gatk.broadinstitute.org/hc/en-us/articles/360035890811-Resource-bundle
 
 
 ### System requirements
@@ -68,16 +68,6 @@ Quick Start
 -----------
 Users can refer to this example [example](https://github.com/liusylab/NIPT-human-genetics/tree/main/example) for quick start, where we analyze 10 simulated NIPT samples with sequencing depth of around 0.08 to 0.1 fold.
 The input data used in this example (2.1G) exceeds the storage capacity available on GitHub, but you can download it from [zenodo](<10.5281/zenodo.13329720>) and place it in "example/data" if you wish to try the example byself. Alternatively, you can begin analyzing your own NIPT data using the workflow modules provided in the example/bin directory.
-
----------------------------------------------------------------------------------------
-
-### Simulation experiments assessing the performance of BaseVar (optional)
-
-```bash
-$ cd basevar_simulation
-$ [module1.basevar.simulation.sh](./basevar_simulation/module1.basevar.simulation.sh)
-$ sh step1.basevar.simulation.sh
-```
 
 
 Module 1: Alignment and statistics
@@ -154,7 +144,6 @@ We used Samtools and Bedtools to calculate alignment statistics for the alignmen
 ```bash
 $samtools stats $outdir/${sample_id}.sorted.rmdup.realign.BQSR.bam > $outdir/${sample_id}.sorted.rmdup.realign.BQSR.bamstats
 $bedtools genomecov -ibam $outdir/${sample_id}.sorted.rmdup.realign.BQSR.bam -bga -split | bgzip > $outdir/${sample_id}.sorted.rmdup.realign.BQSR.cvg.bed.gz && tabix -p bed $outdir/${sample_id}.sorted.rmdup.realign.BQSR.cvg.bed.gz
-
 ```
 
 Module 2: SNP detection and allele frequency estimation with BaseVar
@@ -181,6 +170,16 @@ $basevar basetype -R $hg38 \
     --nCPU 4
 ```
 
+**Plugins: Simulation experiments for assessing the performance of BaseVar (optional)
+
+The following bash script is available for evaluating the performance of Basevar based on computational simulations: [plugin.basevar.simulation.sh](<./basevar_simulation/plugin.basevar.simulation.sh>)
+
+```bash
+$ cd basevar_simulation
+$ sh plugin.basevar.simulation.sh
+```
+
+
 Module 3: Genotype imputation
 ------------
 
@@ -193,67 +192,94 @@ Module 3: Genotype imputation
 - [module3.glimpse.s5.ligate.sh](./example/bin/module3.glimpse.s5.ligate.sh)
 
 - Explanation of the analyses in this option:
-**S1: Preparing the reference panel and chunks**
+
+**Step1: Preparing the reference panel and chunks**
+- [module3.glimpse.s1.reference_panel_prepare.sh](./example/bin/module3.glimpse.s1.reference_panel_prepare.sh)
+
+After downloading the reference panel or computing our own reference panel using some phasing algorithms, the imputation algorithm we use requires normlization and the selection of only bi-allelic SNPs passing certain minor allele frequency threshold from all variants in the reference panel. In addition, prepare chunk files so as to allow glimpse to impute variants by chunks. This process can be accomplished using the following commands.
 
 ```bash
+## download 1KGP reference panel
+wget -c http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000G_2504_high_coverage/working/20201028_3202_phased/CCDG_14151_B01_GRM_WGS_2020-08-05_chr$i.filtered.shapeit2-duohmm-phased.vcf.gz{,.tbi} -P $reference_path
+
 ## Conduct normalization and filtration of the reference panel
-bcftools norm -m -any ${reference_path}/chr${i}.vcf.gz -Ou --threads 8 | $bcftools view -m 2 -M 2 -v snps -i 'MAF>0.001' --threads 8 -Oz -o ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.vcf.gz
-bcftools index -f ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.vcf.gz
+$bcftools norm -m -any ${reference_path}/chr${i}.vcf.gz -Ou --threads 8 | $bcftools view -m 2 -M 2 -v snps -i 'MAF>0.001' --threads 8 -Oz -o ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.vcf.gz
+$bcftools index -f ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.vcf.gz
 
 ## Extracting variable positions in the reference panel
-bcftools view -G -m 2 -M 2 -v snps ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.vcf.gz -Oz -o ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.sites.vcf.gz --threads 8
-bcftools index -f ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.sites.vcf.gz
-bcftools query -f '%CHROM\\t%POS\\t%REF,%ALT\\n' ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.sites.vcf.gz | bgzip -c > ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.sites.tsv.gz
-tabix -s1 -b2 -e2 ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.sites.tsv.gz
+$bcftools view -G -m 2 -M 2 -v snps ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.vcf.gz -Oz -o ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.sites.vcf.gz --threads 8
+$bcftools index -f ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.sites.vcf.gz
+$bcftools query -f '%CHROM\\t%POS\\t%REF,%ALT\\n' ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.sites.vcf.gz | bgzip -c > ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.sites.tsv.gz
+$tabix -s1 -b2 -e2 ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.sites.tsv.gz
+
+##Prepare chunks for genotype imputation
+$GLIMPSE_chunk --input ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.sites.vcf.gz --region chr${i} --window-size 2000000 --buffer-size 200000 --output ${work_path}/chunks.G10K.chr${i}.txt
 ```
 
-**S2: Computing Genotype Likelihoods**
+**Step2: Computing Genotype Likelihoods**
+- [module3.glimpse.s2.computeGLs.sh](./example/bin/module3.glimpse.s2.computeGLs.sh)
+
+In this step, BCFtools is used to compute genotype likelihood. The jobs are processed in parallel based on chromosomes or regions, depending on the available computational resources.
 
 ```bash
 VCF=${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.sites.vcf.gz
 TSV=${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.sites.tsv.gz
 
-bcftools mpileup -f ${REFGEN} -I -E -a 'FORMAT/DP' -T \${VCF} -r chr${i} $line -Ou | bcftools call -Aim -C alleles -T \${TSV} -Oz -o ${work_path}/GL_file/${name}.chr${i}.vcf.gz
-bcftools index -f ${work_path}/GL_file/${name}.chr${i}.vcf.gz
+$bcftools mpileup -f ${REFGEN} -I -E -a 'FORMAT/DP' -T \${VCF} -r chr${i} $line -Ou | bcftools call -Aim -C alleles -T \${TSV} -Oz -o ${work_path}/GL_file/${name}.chr${i}.vcf.gz
+$bcftools index -f ${work_path}/GL_file/${name}.chr${i}.vcf.gz
 ```
 
-**S3: Merge the genotype likelihood by chunk**
+**Step3: Merge the genotype likelihood**
+- [module3.glimpse.s3.mergeGLs.sh](./example/bin/module3.glimpse.s3.mergeGLs.sh)
+
+Merge the genotype likelihood files and generate chunks to facilitate phasing and genotype imputation.
 
 ```bash
 ls ${work_path}/GL_file/*.chr${i}.vcf.gz > ${work_path}/GL_file/high_dep_100.chr${i}_GL_list.txt
-bcftools merge -m none -r chr${i} -Oz -o ${work_path}/GL_file_merged/high_dep_100.chr${i}.vcf.gz -l ${work_path}/GL_file/high_dep_100.chr${i}_GL_list.txt
-bcftools index -f ${work_path}/GL_file_merged/high_dep_100.chr${i}.vcf.gz
-GLIMPSE_chunk --input ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.sites.vcf.gz --region chr${i} --window-size 2000000 --buffer-size 200000 --output ${work_path}/chunks.G10K.chr${i}.txt
+$bcftools merge -m none -r chr${i} -Oz -o ${work_path}/GL_file_merged/high_dep_100.chr${i}.vcf.gz -l ${work_path}/GL_file/high_dep_100.chr${i}_GL_list.txt
+$bcftools index -f ${work_path}/GL_file_merged/high_dep_100.chr${i}.vcf.gz
 ```
 
-**S4: Phasing by GLIMPSE**
+**Step4: Phasing by GLIMPSE**
+- [module3.glimpse.s4.phase.sh](./example/bin/module3.glimpse.s4.phase.sh)
+
+Phase the variants using a hidden Markov model based on genotype likelihood information, paralleling the tasks by chunks defined in Step 1. 
 
 ```bash
-GLIMPSE_phase --input ${VCF} --reference ${REF} --map ${MAP} --input-region ${IRG} --output-region ${ORG} --output ${OUT}
-bgzip ${OUT}
-bcftools index -f ${OUT}.gz
+$GLIMPSE_phase --input ${VCF} --reference ${REF} --map ${MAP} --input-region ${IRG} --output-region ${ORG} --output ${OUT}
+$bgzip ${OUT}
+$bcftools index -f ${OUT}.gz
 ```
 
-**S5: Ligate**
+**Step5: Ligate**
+- [module3.glimpse.s5.ligate.sh](./example/bin/module3.glimpse.s5.ligate.sh)
+
+Merge the imputation results from the chunks.
 
 ```bash
 ls ${work_path}/imputed_file/high_dep_100.chr${i}.*.imputed.vcf.gz > ${work_path}/imputed_file/high_dep_100.chr${i}_imputed_list.txt
-GLIMPSE_ligate --input ${work_path}/imputed_file/high_dep_100.chr${i}_imputed_list.txt --output ${work_path}/imputed_file_merged/high_dep_100.chr${i}_imputed.vcf
-bgzip ${work_path}/imputed_file_merged/high_dep_100.chr${i}_imputed.vcf
-bcftools index -f ${work_path}/imputed_file_merged/high_dep_100.chr${i}_imputed.vcf.gz
+$GLIMPSE_ligate --input ${work_path}/imputed_file/high_dep_100.chr${i}_imputed_list.txt --output ${work_path}/imputed_file_merged/high_dep_100.chr${i}_imputed.vcf
+$bgzip ${work_path}/imputed_file_merged/high_dep_100.chr${i}_imputed.vcf
+$bcftools index -f ${work_path}/imputed_file_merged/high_dep_100.chr${i}_imputed.vcf.gz
 ```
 
-**S6: Calculating the accuracy (Optinal)**
+**Plugins: Calculating the accuracy (Optinal)**
+
+If high-depth sequencing data is available from some NIPT samples, these high-depth genotypes can be used as the reference set. By comparing the imputed genotype dosage to the high-depth genotypes, we can assess imputation accuracy, specifically by calculating the squared Person correlation coefficient between the true genotypes and the imputed genotype dosages. The following `bcftools` commands can be used to compute imputation accuracy based on allele frequency bins.
 
 ```bash
-bcftools stats $true_set ${work_path}/imputed_file_merged/high_dep_100.chr20_imputed.vcf.gz -s - -t chr20 --af-tag "AF" --af-bins "0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1, 0.15, 0.2, 0.25, 0.5, 1" > ${work_path}/accuracy/high_dep_100.chr20_imputed.txt
+$bcftools stats $true_set ${work_path}/imputed_file_merged/high_dep_100.chr20_imputed.vcf.gz -s - -t chr20 --af-tag "AF" --af-bins "0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1, 0.15, 0.2, 0.25, 0.5, 1" > ${work_path}/accuracy/high_dep_100.chr20_imputed.txt
 ```
 
 ### Option 2: Genotype imputation using QUILT (version 1.0.4)
+- Bash script for this option are divided into two steps
 - [module3.quilt.s1.reference_panel_prepare.sh](./example/bin/module3.quilt.s1.reference_panel_prepare.sh)
 - [module3.quilt.s2.imputation.sh](./example/bin/module3.quilt.s2.imputation.sh)
 
-**Shell scripts for QUILT**
+- Explanation of the analyses in this option:
+
+
+**Step1: **
 
 ```bash
 /software/QUILT/QUILT.R \
