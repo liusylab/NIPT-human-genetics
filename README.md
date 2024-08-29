@@ -74,7 +74,7 @@ $ git clone git@github.com:liusylab/NIPT-human-genetics.git
 Quick Start
 -----------
 Users can refer to this example [example](https://github.com/liusylab/NIPT-human-genetics/tree/main/example) for quick start, where we analyze 10 simulated NIPT samples with sequencing depth of around 0.08 to 0.1 fold.
-The input data used in this example (2.1G) exceeds the storage capacity available on GitHub, but you can download it from [zenodo](10.5281/zenodo.13329720) and place it in `example/data` if you wish to try the example byself. Alternatively, you can begin analyzing your own NIPT data using the workflow modules provided in the `example/bin` directory.
+The input data used in this example (2.1G) exceeds the storage capacity available on GitHub, but you can download it from [zenodo](https://zenodo.org/records/13382182) and place it in `example/data` if you wish to try the example byself. Alternatively, you can begin analyzing your own NIPT data using the workflow modules provided in the `example/bin` directory.
 
 
 Module 1: Alignment and statistics
