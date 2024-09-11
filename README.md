@@ -39,7 +39,7 @@ Pre-requistes
 - [BWA](https://github.com/lh3/bwa): <https://github.com/lh3/bwa>
 - [GATK](https://github.com/broadinstitute/gatk): <https://github.com/broadinstitute/gatk>
 - [Samtools](https://github.com/samtools/samtools/blob/develop/INSTALL): <https://github.com/samtools/samtools/blob/develop/INSTALL>
-- [BaseVar](https://github.com/ShujiaHuang/basevar/tree/master): <https://github.com/ShujiaHuang/basevar/tree/master>
+- [BaseVar](https://github.com/ShujiaHuang/basevar): <https://github.com/ShujiaHuang/basevar>
 - [GLIMPSE](https://odelaneau.github.io/GLIMPSE/docs/installation): <https://odelaneau.github.io/GLIMPSE/docs/installation>
 - [QUILT](https://github.com/rwdavies/QUILT/blob/master/README_QUILT1.md): <https://github.com/rwdavies/QUILT/blob/master/README_QUILT1.md> (optional)
 - [PLINK](https://www.cog-genomics.org/plink/2.0/): <https://www.cog-genomics.org/plink/2.0/>
@@ -168,12 +168,12 @@ In Module 2, we begin conducting some analyses in parallel. In the example, we p
 $ python create_pipeline.py -R $ref --ref_fai $ref_fai -c chr20 --delta 5000000 -t 20 -L $bamlist -o $outdir > basevar.chr20.sh
 ```
 
-Within BaseVar, maximum likelihood and likelihood ratio models are employed to determine the polymorphism of a genomic position and estimate the allele frequencies. Detailed matematical documentation can be found [here](https://www.biorxiv.org/content/10.1101/2023.12.11.570976v1). The latest version of BaseVar is available for download via this [link](<https://github.com/ShujiaHuang/basevar>) and you can install `basevar` by the REANDME documents.
+Within BaseVar, maximum likelihood and likelihood ratio models are employed to determine the polymorphism of a genomic position and estimate the allele frequencies. Detailed matematical documentation can be found [here](https://www.biorxiv.org/content/10.1101/2023.12.11.570976v1). The latest version of BaseVar is available for download via this [link](https://github.com/ShujiaHuang/basevar) and you can install `basevar` locally by following the guideline of this [documents](https://github.com/ShujiaHuang/basevar?tab=readme-ov-file#installation).
 
-To review each of the parameters, you can use `basevar basetype -h`. 
+To review each of the parameters, you can use `basevar basetype -h` in Linux/MacOS terminal.
 
-```
-$ /path-to/basevar basetype -h
+```bash
+$ /path/to/basevar basetype -h
 
 BaseVar: A software for calling variants efficiently from low-pass whole genome sequencing data.
 
