@@ -164,25 +164,66 @@ Explanation of the analyses in this module:
 In Module 2, we begin conducting some analyses in parallel. In the example, we process the data and perform variant detection and allele frequency estimation in 1 million basepair non-overlapping windows. To facilitate this parallelization, we use the pipeline generator **create_pipeline.py**, which distributes the computational tasks based on the --delta parameter across a specific chromosome defined by the -c parameter.
 
 ```bash
-$python create_pipeline.py. -R $ref --ref_fai $ref_fai -c chr20 --delta 1000000 --nCPU 10 -b $bgzip -t $tabix -L $bamlist -o $outdir >> basevar.tmp.sh
+$ python create_pipeline.py -R $ref --ref_fai $ref_fai -c chr20 --delta 5000000 -t 20 -L $bamlist -o $outdir > basevar.chr20.sh
 ```
 
-Within BaseVar, maximum likelihood and likelihood ratio models are employed to determine the polymorphism of a genomic position and estimate the allele frequencies. Detailed matematical documentation can be found [here](https://www.biorxiv.org/content/10.1101/2023.12.11.570976v1). The latest version of BaseVar is available for download via this [link](<https://github.com/ShujiaHuang/basevar>). To review each of the parameters, you can use `basevar basetype -h`.
+Within BaseVar, maximum likelihood and likelihood ratio models are employed to determine the polymorphism of a genomic position and estimate the allele frequencies. Detailed matematical documentation can be found [here](https://www.biorxiv.org/content/10.1101/2023.12.11.570976v1). The latest version of BaseVar is available for download via this [link](<https://github.com/ShujiaHuang/basevar>) and you can install `basevar` by the REANDME documents.
+
+To review each of the parameters, you can use `basevar basetype -h`. 
+
+```
+$ /path-to/basevar basetype -h
+
+BaseVar: A software for calling variants efficiently from low-pass whole genome sequencing data.
+
+About: Calling variants by BaseVar.
+Usage: basevar basetype [options] <-R Fasta> <--output-vcf> <--output-cvg> [-I input] ...
+
+optional arguments:
+  -I, --input=FILE             BAM/CRAM file containing reads.
+  -L, --align-file-list=FILE   BAM/CRAM files list, one file per row.
+  -R, --reference FILE         Input reference fasta file.
+
+  -m, --min-af=float           Setting prior precision of MAF and skip uneffective caller positions.
+                               Usually you can set it to be min(0.001, 100/x), x is the number of input
+                               BAM files.[min(0.001, 100/x)]. In generally, you don't have to worry about
+                               this parameter.
+  -q, --mapq=INT               Only include reads with mapping quality >= INT. [10]
+  -B, --batch-count=INT        INT simples per batchfile. [200]
+  -t, --thread=INT             Number of threads. [4]
+
+  -G, --pop-group=FILE         Calculating the allele frequency for specific population.
+  -r, --regions=chr:start-end  Skip positions which not in these regions. This parameter could be a list
+                               of comma deleimited genome regions(e.g.: chr:start-end) or a file contain
+                               the list of regions.
+  --output-vcf FILE            Output VCF file.
+  --output-cvg FILE            Output position coverage file.
+
+  --filename-has-samplename    If the name of bamfile is something like 'SampleID.xxxx.bam', set this
+                               argrument could save a lot of time during get the sample id from BAMfile
+                               header information.
+  --smart-rerun                Rerun process by checking batchfiles.
+  -h, --help                   Show this help message and exit.
+
+```
+
+
+Here is a simple example for running basevar: 
 
 ```bash
 $basevar basetype -R $hg38 \
-    --regions chr11:5246595-5248428,chr17:41197764-41276135 \
-    --batch-count 10 \
-    -m 0.001 \
+    -B 200 \
+    -t 20 \
     -L bamfile.list \
+    -r chr2,chr11:5246595-5248428,chr17:41197764-41276135 \
     --output-vcf test.vcf.gz \
-    --output-cvg test.cvg.tsv.gz \
-    --nCPU 4
+    --output-cvg test.cvg.tsv.gz
 ```
 
 >**Plugins**: Simulation experiments for assessing the performance of BaseVar (optional)
 
 The following bash script is available for evaluating the performance of Basevar based on computational simulations: [plugin.basevar.simulation.sh](<./basevar_simulation/plugin.basevar.simulation.sh>)
+
 
 ```bash
 $ cd basevar_simulation
