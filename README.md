@@ -160,20 +160,9 @@ $bedtools genomecov -ibam $outdir/${sample_id}.sorted.rmdup.realign.BQSR.bam -bg
 Module 2: SNP detection and allele frequency estimation with BaseVar
 --------------------------------------------------------------------
 
-You can adhere to the guidelines and examples provided [here](./basevar) to install **BaseVar** before proceeding with the subsequent steps. This ensures that the installation process is completed successfully, enabling you to carry out the following procedures seamlessly.
+You can adhere to the guidelines and examples provided [here](https://github.com/ShujiaHuang/basevar?tab=readme-ov-file#installation) to install **BaseVar** before proceeding with the subsequent steps. This ensures that the installation process is completed successfully, enabling you to carry out the following procedures seamlessly.
 
-
-**Bash script for this module [module2_basevar.sh](./example/bin/module2.basevar.sh)**
-
-Explanation of the analyses in this module:
-
-In Module 2, we begin conducting some analyses in parallel. In the example, we process the data and perform variant detection and allele frequency estimation in 5 million basepair non-overlapping windows. To facilitate this parallelization, we use the pipeline generator [**create_pipeline.py**](./basevar/scripts/create_pipeline.py), which distributes the computational tasks based on the --delta parameter across a specific chromosome defined by the -c parameter.
-
-```bash
-$ python create_pipeline.py -R $ref --ref_fai $ref_fai -c chr20 --delta 5000000 -t 20 -L $bamlist -o $outdir > basevar.chr20.sh
-```
-
-Within BaseVar, maximum likelihood and likelihood ratio models are employed to determine the polymorphism of a genomic position and estimate the allele frequencies. Detailed matematical documentation can be found [here](https://www.biorxiv.org/content/10.1101/2023.12.11.570976v1). The latest version of BaseVar is available for download via this [link](https://github.com/ShujiaHuang/basevar) and you can install `basevar` locally by following the guideline of this [documents](https://github.com/ShujiaHuang/basevar?tab=readme-ov-file#installation).
+Within BaseVar, maximum likelihood and likelihood ratio models are employed to determine the polymorphism of a genomic position and estimate the allele frequencies. Detailed matematical documentation can be found [here](https://www.biorxiv.org/content/10.1101/2023.12.11.570976v1). 
 
 To review each of the parameters, you can use `basevar basetype -h` in Linux/MacOS terminal.
 
@@ -213,7 +202,6 @@ optional arguments:
 
 ```
 
-
 Here is a simple example for running basevar: 
 
 ```bash
@@ -224,6 +212,16 @@ $basevar basetype -R $hg38 \
     -r chr2,chr11:5246595-5248428,chr17:41197764-41276135 \
     --output-vcf test.vcf.gz \
     --output-cvg test.cvg.tsv.gz
+```
+
+**Bash script for this module [module2_basevar.sh](./example/bin/module2.basevar.sh)**
+
+Explanation of the analyses in this module:
+
+In Module 2, we begin conducting some analyses in parallel. In the example, we process the data and perform variant detection and allele frequency estimation in 5 million basepair non-overlapping windows. To facilitate this parallelization, we use the pipeline generator [**create_pipeline.py**](https://github.com/ShujiaHuang/basevar/blob/master/scripts/create_pipeline.py), which distributes the computational tasks based on the --delta parameter across a specific chromosome defined by the -c parameter.
+
+```bash
+$ python create_pipeline.py -R $ref --ref_fai $ref_fai -c chr20 --delta 5000000 -t 20 -L $bamlist -o $outdir > basevar.chr20.sh
 ```
 
 >**Plugins**: Simulation experiments for assessing the performance of BaseVar (optional)
