@@ -29,7 +29,7 @@ echo "#!/bin/sh
 #SBATCH --time=00-05:05:30
 #SBATCH --mem=18432
 #SBATCH --partition=cpu" > basevar.sh
-python $basevarpip -R $ref --ref_fai $ref_fai -c chr20 --delta 5000000 -t 2 -L $bamlist -o $outdir >> basevar.sh
+python $basevarpip -R $ref --ref_fai $ref_fai -c chr20 --delta 5000000 -t 20 -L $bamlist -o $outdir >> basevar.sh
 
 awk '{print $33}' basevar.sh > $outdir/$outprefix.vcf.list
 

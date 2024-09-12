@@ -160,7 +160,7 @@ $bedtools genomecov -ibam $outdir/${sample_id}.sorted.rmdup.realign.BQSR.bam -bg
 Module 2: SNP detection and allele frequency estimation with BaseVar
 --------------------------------------------------------------------
 
-You can adhere to the guidelines provided [here](./basevar) to install **BaseVar** before proceeding with the subsequent steps. This ensures that the installation process is completed successfully, enabling you to carry out the following procedures seamlessly.
+You can adhere to the guidelines and examples provided [here](./basevar) to install **BaseVar** before proceeding with the subsequent steps. This ensures that the installation process is completed successfully, enabling you to carry out the following procedures seamlessly.
 
 
 **Bash script for this module [module2_basevar.sh](./example/bin/module2.basevar.sh)**
