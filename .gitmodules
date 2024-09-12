@@ -1,0 +1,3 @@
+[submodule "basevar"]
+	path = basevar
+	url = git@github.com:ShujiaHuang/basevar.git
