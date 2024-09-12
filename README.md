@@ -62,14 +62,16 @@ Installation
 ------------
 
 ```bash
-$ git clone https://github.com/liusylab/NIPT-human-genetics.git
+$ git clone --recursive  https://github.com/liusylab/NIPT-human-genetics.git
 ```
 
 or
 
 ```bash
-$ git clone git@github.com:liusylab/NIPT-human-genetics.git
+$ git clone --recursive  git@github.com:liusylab/NIPT-human-genetics.git
 ```
+
+> **WARNING:** Please try several times if fail to clone the data causing by the network problem.
 
 
 Quick Start
@@ -158,11 +160,14 @@ $bedtools genomecov -ibam $outdir/${sample_id}.sorted.rmdup.realign.BQSR.bam -bg
 Module 2: SNP detection and allele frequency estimation with BaseVar
 --------------------------------------------------------------------
 
+You can adhere to the guidelines provided [here](./basevar) to install **BaseVar** before proceeding with the subsequent steps. This ensures that the installation process is completed successfully, enabling you to carry out the following procedures seamlessly.
+
+
 **Bash script for this module [module2_basevar.sh](./example/bin/module2.basevar.sh)**
 
 Explanation of the analyses in this module:
 
-In Module 2, we begin conducting some analyses in parallel. In the example, we process the data and perform variant detection and allele frequency estimation in 1 million basepair non-overlapping windows. To facilitate this parallelization, we use the pipeline generator **create_pipeline.py**, which distributes the computational tasks based on the --delta parameter across a specific chromosome defined by the -c parameter.
+In Module 2, we begin conducting some analyses in parallel. In the example, we process the data and perform variant detection and allele frequency estimation in 5 million basepair non-overlapping windows. To facilitate this parallelization, we use the pipeline generator [**create_pipeline.py**](./basevar/scripts/create_pipeline.py), which distributes the computational tasks based on the --delta parameter across a specific chromosome defined by the -c parameter.
 
 ```bash
 $ python create_pipeline.py -R $ref --ref_fai $ref_fai -c chr20 --delta 5000000 -t 20 -L $bamlist -o $outdir > basevar.chr20.sh

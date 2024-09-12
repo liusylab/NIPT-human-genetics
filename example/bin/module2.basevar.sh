@@ -5,21 +5,19 @@
 ###
 
 #Inputfile
-bamlist=../../../NIPT-human-genetics/example/outdir/batch1_final_files/bam.list
+bamlist=../outdir/batch1_final_files/bam.list
 
 #Pipelines, softwares and tools
-basevarpip=../../../NIPT-human-genetics/basevar/0.6.1.1/scripts/create_pipeline.py
-bgzip=/share/home/lsy_liusiyang/software/tabix-0.2.6/bgzip
-tabix=/share/home/lsy_liusiyang/software/tabix-0.2.6/tabix
-bcftools=/share/home/lsy_liusiyang/software/bcftools-1.15/bcftools
-bamlist=../../../NIPT-human-genetics/example/outdir/batch1_final_files/bam.list
+basevarpip=../../basevar/scripts/create_pipeline.py
+tabix=/path/to/tabix
+bcftools=/path/to/bcftools
 
 #Resources
-ref=/share/home/lsy_liusiyang/20220708_Alignment/hg38/Homo_sapiens_assembly38.fasta
-ref_fai=/share/home/lsy_liusiyang/20220708_Alignment/hg38/Homo_sapiens_assembly38.fasta.fai
+ref=/path/to/hg38/Homo_sapiens_assembly38.fasta
+ref_fai=/path/to/hg38/Homo_sapiens_assembly38.fasta.fai
 
 #Output
-outdir=/share/home/lsy_liusiyang/NIPT-human-genetics/example/outdir/basevar_output
+outdir=../outdir/basevar_output
 outprefix=NIPT_basevar_chr20
 
 mkdir -p $outdir
@@ -31,9 +29,9 @@ echo "#!/bin/sh
 #SBATCH --time=00-05:05:30
 #SBATCH --mem=18432
 #SBATCH --partition=cpu" > basevar.sh
-python $basevarpip -R $ref --ref_fai $ref_fai -c chr20 --delta 1000000 --nCPU 10 -b $bgzip -t $tabix -L $bamlist -o $outdir >> basevar.tmp.sh
+python $basevarpip -R $ref --ref_fai $ref_fai -c chr20 --delta 5000000 -t 2 -L $bamlist -o $outdir >> basevar.sh
 
-awk '{print $33}' basevar.tmp.sh > $outdir/$outprefix.vcf.list
+awk '{print $33}' basevar.sh > $outdir/$outprefix.vcf.list
 
 echo "#!/bin/sh
 #SBATCH -J NIPT-human-genetics_test
@@ -41,8 +39,8 @@ echo "#!/bin/sh
 #SBATCH --ntasks-per-node=10
 #SBATCH --time=00-05:05:30
 #SBATCH --mem=18432
-#SBATCH --partition=cpu" > basevar.merge.tmp.sh
-awk '{s=s" "$1;}END{print "time '$bcftools' concat --threads 12 -a --rm-dups all -O z -o '$outdir'/'$outprefix'.vcf.gz"s" && '$tabix' -f -p vcf '$outdir'/'$outprefix'.vcf.gz && echo \"** merge vcf done **\""}' $outprefix.vcf.list >> basevar.merge.tmp.sh
+#SBATCH --partition=cpu" > basevar.merge.sh
+awk '{s=s" "$1;}END{print "time '$bcftools' concat --threads 12 -a --rm-dups all -O z -o '$outdir'/'$outprefix'.vcf.gz"s" && '$tabix' -f -p vcf '$outdir'/'$outprefix'.vcf.gz && echo \"** merge vcf done **\""}' $outprefix.vcf.list >> basevar.merge.sh
 
 
 
