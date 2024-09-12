@@ -1,0 +1,17 @@
+*.py[cod]
+*.log
+*.sh
+*.pdf
+*.png
+*.so
+.*.sw?
+*.egg
+.DS_Store
+
+venv/
+.idea/
+.ipynb_checkpoints/
+*.egg-info/
+dist/
+build/
+trash/
