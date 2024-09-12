@@ -1,15 +1,24 @@
 #!/bin/bash
 
-basevarpip=../../../NIPT-human-genetics/basevar/0.6.1.1/scripts/create_pipeline.py
+###
+#Users should substitute the following paths with their respective local directories.
+###
+
+#Inputfile
 bamlist=../../../NIPT-human-genetics/example/outdir/batch1_final_files/bam.list
 
-
-ref=/share/home/lsy_liusiyang/20220708_Alignment/hg38/Homo_sapiens_assembly38.fasta
-ref_fai=/share/home/lsy_liusiyang/20220708_Alignment/hg38/Homo_sapiens_assembly38.fasta.fai
+#Pipelines, softwares and tools
+basevarpip=../../../NIPT-human-genetics/basevar/0.6.1.1/scripts/create_pipeline.py
 bgzip=/share/home/lsy_liusiyang/software/tabix-0.2.6/bgzip
 tabix=/share/home/lsy_liusiyang/software/tabix-0.2.6/tabix
 bcftools=/share/home/lsy_liusiyang/software/bcftools-1.15/bcftools
+bamlist=../../../NIPT-human-genetics/example/outdir/batch1_final_files/bam.list
 
+#Resources
+ref=/share/home/lsy_liusiyang/20220708_Alignment/hg38/Homo_sapiens_assembly38.fasta
+ref_fai=/share/home/lsy_liusiyang/20220708_Alignment/hg38/Homo_sapiens_assembly38.fasta.fai
+
+#Output
 outdir=/share/home/lsy_liusiyang/NIPT-human-genetics/example/outdir/basevar_output
 outprefix=NIPT_basevar_chr20
 

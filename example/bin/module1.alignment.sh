@@ -1,10 +1,18 @@
 #!/bin/bash
 
+###
+#Users should substitute the following paths with their respective local directories.
+###
+
+#Inputfile
+fqlist=/share/home/lsy_liusiyang/NIPT-human-genetics/example/data/fq.list
+
+#Resources
 ref=/share/home/lsy_liusiyang/20220708_Alignment/hg38/Homo_sapiens_assembly38.fasta
 ref_index_prefix=/share/home/lsy_liusiyang/20220708_Alignment/hg38/Homo_sapiens_assembly38.fasta
 gatk_bundle_dir=/share/home/lsy_liusiyang/20220708_Alignment/hg38
-fqlist=/share/home/lsy_liusiyang/NIPT-human-genetics/example/data/fq.list
 
+#Pipelines, softwares and tools
 workflow=../../../NIPT-human-genetics/bwa_alignment/alignment_workflow.sh
 bwa=/share/home/lsy_liusiyang/software/bwa-0.7.17/bwa
 samtools=/share/home/lsy_liusiyang/software/samtools-1.15.1/samtools
@@ -13,7 +21,6 @@ java=/usr/bin/java
 bedtools=/share/home/lsy_liusiyang/software/bedtools2/bin/bedtools
 bgzip=/share/home/lsy_liusiyang/software/tabix-0.2.6/bgzip
 tabix=/share/home/lsy_liusiyang/software/tabix-0.2.6/tabix
-
 
 ### Output Because the process is conducted in batches and in parallel, a temporary output directory has been set up
 tmpoutdir=/share/home/lsy_liusiyang/NIPT-human-genetics/example/outdir/1tmp_files
