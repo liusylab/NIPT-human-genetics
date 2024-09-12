@@ -26,10 +26,8 @@ Additional moduldes, such as more accurate genotype imputation, kinship inferenc
 Citation
 --------
 
-- Liu et al. [Utilizing Non-Invasive Prenatal Test Sequencing Data for Human Genetic Investigation](https://www.biorxiv.org/content/10.1101/2023.12.11.570976v1). BioRxiv (2023)
-
-- Liu, S. et al. [Genomic Analyses from Non-invasive Prenatal Testing Reveal Genetic Associations, Patterns of Viral Infections , and Chinese Population History](https://doi.org/10.1016/j.cell.2018.08.016). Cell 175, 347-359.e14 (2018).
-
+> Liu, S. et al. (2018). Genomic Analyses from Non-invasive Prenatal Testing Reveal Genetic Associations, Patterns of Viral Infections , and Chinese Population History. *Cell* 175, 347-359.e14. [doi:10.1016/j.cell.2018.08.016](https://doi.org/10.1016/j.cell.2018.08.016)
+> Liu et al. (2023). Utilizing Non-Invasive Prenatal Test Sequencing Data for Human Genetic Investigation. BioRxiv, [doi:10.1101/2023.12.11.570976v1](https://www.biorxiv.org/content/10.1101/2023.12.11.570976v1)
 
 
 Pre-requistes
