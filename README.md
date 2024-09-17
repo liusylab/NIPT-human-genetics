@@ -168,9 +168,7 @@ To review each of the parameters, you can use `basevar basetype -h` in Linux/Mac
 ```bash
 $ /path/to/basevar basetype -h
 
-BaseVar: A software for calling variants efficiently from low-pass whole genome sequencing data.
-
-About: Calling variants by BaseVar.
+About: Call variants and estimate allele frequency by BaseVar.
 Usage: basevar basetype [options] <-R Fasta> <--output-vcf> <--output-cvg> [-I input] ...
 
 optional arguments:
@@ -178,10 +176,11 @@ optional arguments:
   -L, --align-file-list=FILE   BAM/CRAM files list, one file per row.
   -R, --reference FILE         Input reference fasta file.
 
-  -m, --min-af=float           Setting prior precision of MAF and skip uneffective caller positions.
-                               Usually you can set it to be min(0.001, 100/x), x is the number of input
-                               BAM files.[min(0.001, 100/x)]. In generally, you don't have to worry about
-                               this parameter.
+  -m, --min-af=float           Setting prior precision of MAF and skip ineffective caller positions,
+                               a typical approach involves setting it to min(0.001, 100/x), where x
+                               represents the number of input BAM files [min(0.001, 100/x)]. In most
+                               cases, users need not be overly concerned about this parameter, as it
+                               is generally handled automatically by the program.
   -q, --mapq=INT               Only include reads with mapping quality >= INT. [10]
   -B, --batch-count=INT        INT simples per batchfile. [200]
   -t, --thread=INT             Number of threads. [4]
@@ -194,11 +193,10 @@ optional arguments:
   --output-cvg FILE            Output position coverage file.
 
   --filename-has-samplename    If the name of bamfile is something like 'SampleID.xxxx.bam', set this
-                               argrument could save a lot of time during get the sample id from BAMfile
-                               header information.
+                               argrument could save a lot of time during get the sample id from BAMfile.
   --smart-rerun                Rerun process by checking batchfiles.
   -h, --help                   Show this help message and exit.
-
+  
 ```
 
 Here is a simple example for running basevar: 
