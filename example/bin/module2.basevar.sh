@@ -8,7 +8,7 @@
 bamlist=../outdir/batch1_final_files/bam.list
 
 #Pipelines, softwares and tools
-basevarpip=../../basevar/scripts/create_pipeline.py
+basevarpip=../../BaseVar2/scripts/create_pipeline.py
 tabix=/path/to/tabix
 bcftools=/path/to/bcftools
 
@@ -29,7 +29,7 @@ echo "#!/bin/sh
 #SBATCH --time=00-05:05:30
 #SBATCH --mem=18432
 #SBATCH --partition=cpu" > basevar.sh
-python $basevarpip -R $ref --ref_fai $ref_fai -c chr20 --delta 5000000 -t 20 -L $bamlist -o $outdir >> basevar.sh
+python $basevarpip -Q 20 -q 10 -R $ref --ref_fai $ref_fai -c chr20 --delta 5000000 -t 24 -L $bamlist -o $outdir >> basevar.sh
 
 awk '{print $33}' basevar.sh > $outdir/$outprefix.vcf.list
 

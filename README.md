@@ -156,41 +156,40 @@ $samtools stats $outdir/${sample_id}.sorted.rmdup.realign.BQSR.bam > $outdir/${s
 $bedtools genomecov -ibam $outdir/${sample_id}.sorted.rmdup.realign.BQSR.bam -bga -split | bgzip > $outdir/${sample_id}.sorted.rmdup.realign.BQSR.cvg.bed.gz && tabix -p bed $outdir/${sample_id}.sorted.rmdup.realign.BQSR.cvg.bed.gz
 ```
 
-Module 2: SNP detection and allele frequency estimation with BaseVar
+Module 2: SNPs/Indels detection and allele frequency estimation with BaseVar
 --------------------------------------------------------------------
 
-You can adhere to the guidelines and examples provided [here](https://github.com/ShujiaHuang/basevar?tab=readme-ov-file#installation) to install **BaseVar** before proceeding with the subsequent steps. This ensures that the installation process is completed successfully, enabling you to carry out the following procedures seamlessly.
+You can adhere to the guidelines and examples provided [here](https://github.com/ShujiaHuang/BaseVar2) to install **BaseVar** before proceeding with the subsequent steps. This ensures that the installation process is completed successfully, enabling you to carry out the following procedures seamlessly.
 
 Within BaseVar, maximum likelihood and likelihood ratio models are employed to determine the polymorphism of a genomic position and estimate the allele frequencies. Detailed matematical documentation can be found [here](https://www.biorxiv.org/content/10.1101/2023.12.11.570976v1). 
 
-To review each of the parameters, you can use `basevar basetype -h` in Linux/MacOS terminal.
+To review each of the parameters, you can use `basevar caller -h` in Linux/MacOS terminal.
 
 ```bash
-$ /path/to/basevar basetype -h
+$ /path/to/basevar caller -h
 
 About: Call variants and estimate allele frequency by BaseVar.
-Usage: basevar basetype [options] <-R Fasta> <--output-vcf> <--output-cvg> [-I input] ...
+Usage: basevar caller [options] <-R Fasta> <--output-vcf> [-L bam.list] in1.bam [in2.bam ...] ...
 
-optional arguments:
-  -I, --input=FILE             BAM/CRAM file containing reads.
-  -L, --align-file-list=FILE   BAM/CRAM files list, one file per row.
+Required arguments:
   -R, --reference FILE         Input reference fasta file.
+  --output-vcf FILE            Output VCF file.
+
+Optional options:
+  -L, --align-file-list=FILE   BAM/CRAM files list, one file per row.
+  -r, --regions=REG[,...]      Skip positions which not in these regions. This parameter could be a list
+                               of comma deleimited genome regions(e.g.: chr:start-end).
+  -G, --pop-group=FILE         Calculating the allele frequency for specific population.
 
   -m, --min-af=float           Setting prior precision of MAF and skip ineffective caller positions,
-                               a typical approach involves setting it to min(0.001, 100/x), where x
-                               represents the number of input BAM files [min(0.001, 100/x)]. In most
+                               a typical approach involves setting it to min(0.001000, 100/x), where x
+                               represents the number of input BAM files min(0.001000, 100/x). In most
                                cases, users need not be overly concerned about this parameter, as it
                                is generally handled automatically by the program.
-  -q, --mapq=INT               Only include reads with mapping quality >= INT. [10]
+  -Q, --min-BQ INT             Skip bases with base quality < INT [5]
+  -q, --mapq=INT               Skip reads with mapping quality < INT [10]
   -B, --batch-count=INT        INT simples per batchfile. [200]
-  -t, --thread=INT             Number of threads. [4]
-
-  -G, --pop-group=FILE         Calculating the allele frequency for specific population.
-  -r, --regions=chr:start-end  Skip positions which not in these regions. This parameter could be a list
-                               of comma deleimited genome regions(e.g.: chr:start-end) or a file contain
-                               the list of regions.
-  --output-vcf FILE            Output VCF file.
-  --output-cvg FILE            Output position coverage file.
+  -t, --thread=INT             Number of threads. [14]
 
   --filename-has-samplename    If the name of bamfile is something like 'SampleID.xxxx.bam', set this
                                argrument could save a lot of time during get the sample id from BAMfile.
@@ -202,23 +201,22 @@ optional arguments:
 Here is a simple example for running basevar: 
 
 ```bash
-$basevar basetype -R $hg38 \
-    -B 200 \
-    -t 20 \
+$basevar caller -R $hg38 \
+    -Q 20 -q 10 -B 500 \
+    -t 24 \
     -L bamfile.list \
-    -r chr2,chr11:5246595-5248428,chr17:41197764-41276135 \
-    --output-vcf test.vcf.gz \
-    --output-cvg test.cvg.tsv.gz
+    -r chr1,chr11:5246595-5248428,chr17:41197764-41276135 \
+    --output-vcf test.vcf.gz
 ```
 
 **Bash script for this module [module2_basevar.sh](./example/bin/module2.basevar.sh)**
 
 Explanation of the analyses in this module:
 
-In Module 2, we begin conducting some analyses in parallel. In the example, we process the data and perform variant detection and allele frequency estimation in 5 million basepair non-overlapping windows. To facilitate this parallelization, we use the pipeline generator [**create_pipeline.py**](https://github.com/ShujiaHuang/basevar/blob/master/scripts/create_pipeline.py), which distributes the computational tasks based on the --delta parameter across a specific chromosome defined by the -c parameter.
+In Module 2, we begin conducting some analyses in parallel. In the example, we process the data and perform variant detection and allele frequency estimation in 5 million basepair non-overlapping windows. To facilitate this parallelization, we use the pipeline generator [**create_pipeline.py**](https://github.com/ShujiaHuang/BaseVar2/blob/main/scripts/create_pipeline.py), which distributes the computational tasks based on the --delta parameter across a specific chromosome defined by the -c parameter.
 
 ```bash
-$ python create_pipeline.py -R $ref --ref_fai $ref_fai -c chr20 --delta 5000000 -t 20 -L $bamlist -o $outdir > basevar.chr20.sh
+$ python create_pipeline.py -Q 20 -q 10 -R $ref --ref_fai $ref_fai -c chr20 --delta 5000000 -t 24 -L $bamlist -o $outdir > basevar.chr20.sh
 ```
 
 >**Plugins**: Simulation experiments for assessing the performance of BaseVar (optional)
@@ -272,7 +270,7 @@ $tabix -s1 -b2 -e2 ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.si
 $GLIMPSE_chunk --input ${work_path}/reference_file/chr${i}.biallelic.snp.maf0.001.sites.vcf.gz --region chr${i} --window-size 2000000 --buffer-size 200000 --output ${work_path}/chunks.G10K.chr${i}.txt
 ```
 
-**Step2: Computing Genotype Likelihoods**
+*<!-- *Step2: Computing Genotype Likelihoods**
 
 In this step, BCFtools is used to compute genotype likelihood. The jobs are processed in parallel based on chromosomes or regions, depending on the available computational resources.
 
@@ -297,6 +295,8 @@ ls ${work_path}/GL_file/*.chr${i}.vcf.gz > ${work_path}/GL_file/high_dep_100.chr
 $bcftools merge -m none -r chr${i} -Oz -o ${work_path}/GL_file_merged/high_dep_100.chr${i}.vcf.gz -l ${work_path}/GL_file/high_dep_100.chr${i}_GL_list.txt
 $bcftools index -f ${work_path}/GL_file_merged/high_dep_100.chr${i}.vcf.gz
 ```
+ -->
+
 
 **Step4: Phasing by GLIMPSE**
 
