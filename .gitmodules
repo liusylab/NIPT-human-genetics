@@ -1,3 +1,3 @@
-[submodule "basevar"]
-	path = basevar
-	url = https://github.com/ShujiaHuang/basevar.git
+[submodule "BaseVar2"]
+	path = BaseVar2
+	url = git@github.com:ShujiaHuang/BaseVar2.git

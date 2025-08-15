@@ -169,11 +169,11 @@ To review each of the parameters, you can use `basevar caller -h` in Linux/MacOS
 $ /path/to/basevar caller -h
 
 About: Call variants and estimate allele frequency by BaseVar.
-Usage: basevar caller [options] <-R Fasta> <--output-vcf> [-L bam.list] in1.bam [in2.bam ...] ...
+Usage: basevar caller [options] <-f Fasta> <--output-vcf output_file> [-L bam.list] in1.bam [in2.bam ...] ...
 
 Required arguments:
-  -R, --reference FILE         Input reference fasta file.
-  --output-vcf FILE            Output VCF file.
+  -f, --reference FILE         Input reference fasta file.
+  -o, --output    FILE         Output VCF file.
 
 Optional options:
   -L, --align-file-list=FILE   BAM/CRAM files list, one file per row.
@@ -186,9 +186,9 @@ Optional options:
                                represents the number of input BAM files min(0.001000, 100/x). In most
                                cases, users need not be overly concerned about this parameter, as it
                                is generally handled automatically by the program.
-  -Q, --min-BQ INT             Skip bases with base quality < INT [5]
-  -q, --mapq=INT               Skip reads with mapping quality < INT [10]
-  -B, --batch-count=INT        INT simples per batchfile. [200]
+  -Q, --min-BQ INT             Skip bases with base quality < INT [10]
+  -q, --mapq=INT               Skip reads with mapping quality < INT [5]
+  -B, --batch-count=INT        INT simples per batchfile. [500]
   -t, --thread=INT             Number of threads. [14]
 
   --filename-has-samplename    If the name of bamfile is something like 'SampleID.xxxx.bam', set this
@@ -201,12 +201,12 @@ Optional options:
 Here is a simple example for running basevar: 
 
 ```bash
-$basevar caller -R $hg38 \
+$basevar caller -f $hg38 \
     -Q 20 -q 10 -B 500 \
     -t 24 \
     -L bamfile.list \
     -r chr1,chr11:5246595-5248428,chr17:41197764-41276135 \
-    --output-vcf test.vcf.gz
+    --output test.vcf.gz
 ```
 
 **Bash script for this module [module2_basevar.sh](./example/bin/module2.basevar.sh)**
@@ -216,7 +216,7 @@ Explanation of the analyses in this module:
 In Module 2, we begin conducting some analyses in parallel. In the example, we process the data and perform variant detection and allele frequency estimation in 5 million basepair non-overlapping windows. To facilitate this parallelization, we use the pipeline generator [**create_pipeline.py**](https://github.com/ShujiaHuang/BaseVar2/blob/main/scripts/create_pipeline.py), which distributes the computational tasks based on the --delta parameter across a specific chromosome defined by the -c parameter.
 
 ```bash
-$ python create_pipeline.py -Q 20 -q 10 -R $ref --ref_fai $ref_fai -c chr20 --delta 5000000 -t 24 -L $bamlist -o $outdir > basevar.chr20.sh
+$ python create_pipeline.py -Q 20 -q 10 -f $ref --ref_fai $ref_fai -c chr20 --delta 5000000 -t 24 -L $bamlist -o $outdir > basevar.chr20.sh
 ```
 
 >**Plugins**: Simulation experiments for assessing the performance of BaseVar (optional)
