@@ -7,10 +7,4 @@ git submodule update --init --recursive
 # update the submodule
 git submodule update --remote
 
-
 # Remove submodule: https://www.geeksforgeeks.org/git/how-to-remove-a-submodule/
-git submodule deinit -f BaseVar2  #
-
-
-
-rm -rf basevar
