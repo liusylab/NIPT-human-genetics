@@ -23,13 +23,6 @@ Introduction
 
 Additional moduldes, such as more accurate genotype imputation, kinship inference and enhanced GWAS analysis, are currently under development. 
 
-Citation
---------
-
-The methodology paper is published in **Cell Genomics**.
-
-> - Liu, S., Liu, Y., Gu, Y., Lin, X., Zhu, H., Liu, H., Xu, Z., Cheng, S., Lan, X., Li, L., Huang, M., Li, H., Nielsen, R., Davies, RW., Albrechtsen, A., Chen, GB., Qiu, X., Jin, X., Huang, S., (2024). Utilizing non-invasive prenatal test sequencing data for human genetic investigation. *Cell Genomics* 4(10), 100669 [doi:10.1016/j.xgen.2024.100669](https://www.cell.com/cell-genomics/fulltext/S2666-979X(24)00288-X)
-
 
 Pre-requistes
 -------------
@@ -85,7 +78,6 @@ Module 1: Alignment and statistics
 **Bash script for this module [module1.alignment.sh](./example/bin/module1.alignment.sh)**
 
 Below is an explanation of the analyses in this module:
-
 
 **1. read alignment using bwa**
 
@@ -179,7 +171,7 @@ Optional options:
   -L, --align-file-list=FILE   BAM/CRAM files list, one file per row.
   -r, --regions=REG[,...]      Skip positions which not in these regions. This parameter could be a list
                                of comma deleimited genome regions(e.g.: chr:start-end).
-  -G, --pop-group=FILE         Calculating the allele frequency for specific population.
+  -G, --pop-group=FILE         Calculating the allele frequency for specific population group.
 
   -m, --min-af=float           Setting prior precision of MAF and skip ineffective caller positions,
                                a typical approach involves setting it to min(0.001000, 100/x), where x
@@ -191,8 +183,8 @@ Optional options:
   -B, --batch-count=INT        INT simples per batchfile. [500]
   -t, --thread=INT             Number of threads. [14]
 
-  --filename-has-samplename    If the name of bamfile is something like 'SampleID.xxxx.bam', set this
-                               argrument could save a lot of time during get the sample id from BAMfile.
+  --filename-has-samplename    If the prefix name of BAMfiles/CRAMfiles start with 'Sample ID', something like 'SampleID.bam', set this
+                               argrument could save a lot of time during get the sample id from BAMfiles.
   --smart-rerun                Rerun process by checking batchfiles.
   -h, --help                   Show this help message and exit.
 
@@ -210,6 +202,7 @@ $basevar caller -f $hg38 \
     -Q 20 -q 30 -B 500 -t 24 \
     -L bamfile.list \
     -r chr1,chr11:5246595-5248428,chr17:41197764-41276135 \
+    --filename-has-samplename \
     --output test.vcf.gz
 ```
 
@@ -217,10 +210,10 @@ $basevar caller -f $hg38 \
 
 Explanation of the analyses in this module:
 
-In Module 2, we begin conducting some analyses in parallel. In the example, we process the data and perform variant detection and allele frequency estimation in 5 million basepair non-overlapping windows. To facilitate this parallelization, we use the pipeline generator [**create_pipeline.py**](https://github.com/ShujiaHuang/BaseVar2/blob/main/scripts/create_pipeline.py), which distributes the computational tasks based on the --delta parameter across a specific chromosome defined by the -c parameter.
+In Module 2, we begin conducting some analyses in parallel. In the example, we process the data and perform variant detection and allele frequency estimation in 5 million basepair non-overlapping windows. To facilitate this parallelization, we use the pipeline generator `basevar pipeline`, which distributes the computational tasks based on the -d parameter across a specific chromosome defined by the -c parameter.
 
 ```bash
-$ python create_pipeline.py -Q 20 -q 30 -f $ref --ref_fai $ref_fai -c chr20 --delta 5000000 -t 24 -L $bamlist -o $outdir > basevar.chr20.sh
+$ basevar pipeline -Q 20 -q 30 -f $ref --ref_fai $ref_fai -c chr20 -d 5000000 -B 200 -t 24 -L $bamlist --filename-has-samplename -o $outdir > basevar.chr20.sh
 ```
 
 >**Plugins**: Simulation experiments for assessing the performance of BaseVar (optional)
@@ -300,6 +293,7 @@ $bcftools merge -m none -r chr${i} -Oz -o ${work_path}/GL_file_merged/high_dep_1
 $bcftools index -f ${work_path}/GL_file_merged/high_dep_100.chr${i}.vcf.gz
 ```
  -->
+
 
 
 **Step4: Phasing by GLIMPSE**
@@ -454,6 +448,13 @@ $plink2 --vcf $imputed_vcf dosage=DS --fam $fam  --covar $covariates --covar-var
 $python $script2 $vcflist $outdir $covar9 $pheno $phenotable $hweinfo linear > $outdir/$pheno/bin/module1.plink.work.sh
 
 ```
+
+Citation
+--------
+
+The methodology paper is published in **Cell Genomics**.
+
+> - Liu, S., Liu, Y., Gu, Y., Lin, X., Zhu, H., Liu, H., Xu, Z., Cheng, S., Lan, X., Li, L., Huang, M., Li, H., Nielsen, R., Davies, RW., Albrechtsen, A., Chen, GB., Qiu, X., Jin, X., Huang, S., (2024). Utilizing non-invasive prenatal test sequencing data for human genetic investigation. *Cell Genomics* 4(10), 100669 [doi:10.1016/j.xgen.2024.100669](https://www.cell.com/cell-genomics/fulltext/S2666-979X(24)00288-X)
 
 
 
